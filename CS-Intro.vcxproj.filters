@@ -15,7 +15,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="hw0q1\hw0q1.c">
+    <ClCompile Include="Lectures\Lecture 1\Lecture_1.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Homework\hw0q1\hw0q1.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
