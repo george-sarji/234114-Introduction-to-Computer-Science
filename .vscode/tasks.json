@@ -5,7 +5,7 @@
         "label": "msvc build",
         "type": "shell",
         "command": "cl.exe",
-        "args": ["/EHsc", "/Zi", "/Fe:", "${workspaceFolder}/Output/${fileBasenameNoExtension}.exe", "${file}"],
+        "args": ["/EHsc", "/Zi", "/Fe:", "${workspaceFolder}\\Output\\${fileBasenameNoExtension}.exe", "${file}"],
         "group": {
           "kind": "build",
           "isDefault": true
