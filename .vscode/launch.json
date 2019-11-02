@@ -5,7 +5,7 @@
         "name": "(msvc) Launch",
         "type": "cppvsdbg",
         "request": "launch",
-        "program": "${fileDirname}/${fileBasenameNoExtension}.exe",
+        "program": "${workspaceFolder}/Output/${fileBasenameNoExtension}.exe",
         "args": [],
         "stopAtEntry": true,
         "cwd": "${workspaceFolder}",
