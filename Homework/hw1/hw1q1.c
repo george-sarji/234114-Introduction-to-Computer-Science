@@ -51,7 +51,7 @@ int ValidateID()
     int result, providedNum;
     printf("Validating ID, please enter 9 digits ID:\n");
     result = scanf("%9d", &providedNum);
-    if (result == -1)
+    if (result != -1)
     {
         return -1;
     }
