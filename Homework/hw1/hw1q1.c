@@ -1,5 +1,6 @@
 #include <stdio.h>
 
+// This function will return the Check Digit that we require. (last digit of ID)
 int ValidatorFunc(int idNum)
 {
     int sumDigits = 0;
@@ -12,10 +13,14 @@ int ValidatorFunc(int idNum)
     return 10 - sumDigits % 10;
 }
 
+// This function will handle the CheckDigit mode.
 int CheckDigit()
 {
     int result, providedNum = 0;
     printf("\nCalculating CheckDigit, please enter 8 digits:\n");
+    // This for loop was made to filter the inputs and to meet the requirements.
+    // The program takes each input seperately and checks whether it is actually a number or a different character.
+    // If not a number, the program will provide the error message and close.
     for (int i = 0; i < 8; i++)
     {
         int currentNum;
@@ -30,10 +35,14 @@ int CheckDigit()
     return 0;
 }
 
+// This function will handle the ValidateID portion of the program.
 int ValidateID()
 {
     int result, providedNum = 0;
     printf("\nValidating ID, please enter 9 digits ID:\n");
+    // This for loop was made to filter the inputs and to meet the requirements.
+    // The program takes each input seperately and checks whether it is actually a number or a different character.
+    // If not a number, the program will provide the error message and close.
     for (int i = 0; i < 9; i++)
     {
         int currentNum;
