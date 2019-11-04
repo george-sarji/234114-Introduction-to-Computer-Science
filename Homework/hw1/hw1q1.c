@@ -77,7 +77,7 @@ int main()
     }
     default:
     {
-        printf("Please enter the appropriate letter.");
+        printf("Oops that's a loophole :(.");
         break;
     }
     }
