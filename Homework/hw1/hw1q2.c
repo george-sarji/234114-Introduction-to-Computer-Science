@@ -1,5 +1,27 @@
 #include <stdio.h>
 
+int performCapitalization(int character)
+{
+    if (character % 2 == 0)
+    {
+        // Make letter capital.
+        // If not capital, capitalize.
+        if (character >= 'a' && character <= 'z')
+        {
+            character = character - 'a' + 'A';
+        }
+    }
+    else
+    {
+        // Make letter small.
+        if (character >= 'A' && character <= 'Z')
+        {
+            character = character - 'A' + 'a';
+        }
+    }
+    return character;
+}
+
 int decodeWord(int reversedNumber)
 {
     int wordCounter = 0;
@@ -17,7 +39,7 @@ int decodeWord(int reversedNumber)
         // Take next digit.
         currentNum = reversedNumber % currentDigit;
 
-        if ((currentNum >= 'a' && currentNum <= 'z'))
+        if ((currentNum >= 'a' && currentNum <= 'z') || (currentNum >= 'A' && currentNum <= 'Z'))
         {
             // Successful decode.
             if (wordCounter == 0)
@@ -25,11 +47,7 @@ int decodeWord(int reversedNumber)
                 // First decode.
                 printf("The decoded word is: ");
             }
-            if (currentNum % 2 == 0)
-            {
-                // Make capital letter.
-                currentNum = currentNum - 'a' + 'A';
-            }
+            currentNum = performCapitalization(currentNum);
             printf("%c", currentNum);
 
             // Reset parameters.
