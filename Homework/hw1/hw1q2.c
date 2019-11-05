@@ -22,10 +22,10 @@ int performCapitalization(int character)
     return character;
 }
 
-int decodeWord(int reversedNumber)
+int decodeWord(unsigned long int reversedNumber)
 {
     int wordCounter = 0;
-    int currentNum = 0, currentDigit = 10;
+    long unsigned int currentNum = 0, currentDigit = 10;
     while (reversedNumber != 0)
     {
         // Have we reached 3 digits already?
@@ -39,7 +39,7 @@ int decodeWord(int reversedNumber)
         // Take next digit.
         currentNum = reversedNumber % currentDigit;
 
-        if ((currentNum >= 'a' && currentNum <= 'z') || (currentNum >= 'A' && currentNum <= 'Z'))
+        if ((currentNum >= 'a' && currentNum <= 'z'))
         {
             // Successful decode.
             if (wordCounter == 0)
@@ -76,10 +76,10 @@ int decodeWord(int reversedNumber)
 
 int ReverseNumber()
 {
-    int providedNum, reversedNum = 0;
+    unsigned long int providedNum, reversedNum = 0;
     int temporaryNum;
     printf("Enter an encoded word and I'll do my best: \n");
-    scanf("%d", &providedNum);
+    scanf("%lu", &providedNum);
     // Reverse the number.
     while (providedNum != 0)
     {
