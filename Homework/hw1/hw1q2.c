@@ -58,6 +58,10 @@ int decodeWord(unsigned long int reversedNumber)
         }
         else
         {
+            if (wordCounter != 0)
+            {
+                break;
+            }
             currentDigit *= 10;
         }
     }
