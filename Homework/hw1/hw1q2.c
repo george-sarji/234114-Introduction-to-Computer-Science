@@ -19,7 +19,7 @@ int performCapitalization(int character)
             character = character - 'A' + 'a';
         }
     }
-    return character;
+    return (char)character;
 }
 
 int decodeWord(unsigned long int reversedNumber)
@@ -47,8 +47,8 @@ int decodeWord(unsigned long int reversedNumber)
                 // First decode.
                 printf("The decoded word is: ");
             }
-            currentNum = performCapitalization(currentNum);
-            printf("%c", currentNum);
+            char currentChar = performCapitalization(currentNum);
+            printf("%c", currentChar);
 
             // Reset parameters.
             currentNum = 0;
@@ -58,7 +58,7 @@ int decodeWord(unsigned long int reversedNumber)
         }
         else
         {
-            if (wordCounter != 0)
+            if (wordCounter != 0 && currentDigit >= 1000)
             {
                 break;
             }
