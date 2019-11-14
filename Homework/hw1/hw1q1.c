@@ -1,94 +1,91 @@
 #include <stdio.h>
 
-// This function will return the Check Digit that we require. (last digit of ID)
-int ValidatorFunc(int idNum)
+int scanNumber(int num)
 {
-    int sumDigits = 0;
-    for (int i = 0; i < 8; i++)
+    // This function will perform the scanning and validation of the input.
+    // Return value will be the input number if its valid. If invalid, it will return -1.
+    int totalNum = 0, currentNum = 0, scanResult = 0;
+    for (int i = 0; i < num; i++)
     {
-        int currentDigit = idNum % 10 * (i % 2 == 0 ? 2 : 1);
-        sumDigits += currentDigit % 10 + currentDigit / 10;
-        idNum /= 10;
-    }
-    return 10 - sumDigits % 10;
-}
-
-// This function will handle the CheckDigit mode.
-int CheckDigit()
-{
-    int result, providedNum = 0;
-    printf("\nCalculating CheckDigit, please enter 8 digits:\n");
-    // This for loop was made to filter the inputs and to meet the requirements.
-    // The program takes each input seperately and checks whether it is actually a number or a different character.
-    // If not a number, the program will provide the error message and close.
-    for (int i = 0; i < 8; i++)
-    {
-        int currentNum;
-        result = scanf("%1d", &currentNum);
-        if (result != 1)
+        scanResult = scanf(" %1d", &currentNum);
+        if (scanResult < 1)
         {
+            printf("\nERROR");
             return -1;
         }
-        providedNum = providedNum * 10 + currentNum;
+        totalNum = totalNum * 10 + currentNum;
     }
-    printf("\nCheckDigit = %i", ValidatorFunc(providedNum));
-    return 0;
+    return totalNum;
 }
 
-// This function will handle the ValidateID portion of the program.
-int ValidateID()
+int calculateDigit(int num)
 {
-    int result, providedNum = 0;
-    printf("\nValidating ID, please enter 9 digits ID:\n");
-    // This for loop was made to filter the inputs and to meet the requirements.
-    // The program takes each input seperately and checks whether it is actually a number or a different character.
-    // If not a number, the program will provide the error message and close.
-    for (int i = 0; i < 9; i++)
+    // This function will perform the logic to provide the check digit.
+    // The multiplication order is: 2, 1, 2, 1, 2, 1, 2, 1
+    int totalNumber = 0, counter = 0;
+    while (num > 0)
     {
-        int currentNum;
-        result = scanf("%1d", &currentNum);
-        if (result != 1)
+        counter++;
+        int currentDigit = num % 10;
+        if (counter % 2 == 1)
         {
-            return -1;
+            currentDigit *= 2;
+            totalNumber += currentDigit % 10 + currentDigit / 10;
         }
-        providedNum = providedNum * 10 + currentNum;
+        else
+        {
+            totalNumber += currentDigit;
+        }
+        num /= 10;
     }
-    int currentDigit = providedNum % 10;
-    int calculatedDigit = ValidatorFunc(providedNum / 10);
-    printf("\nYou have entered CheckDigit = %i\n", currentDigit);
-    printf("Calculated CheckDigit = %i\n\n", calculatedDigit);
-    printf(currentDigit == calculatedDigit ? "Legal ID :)" : "Illegal ID :(");
-    return 0;
+    // The return value will be the accordingly calculated digit.
+    return (10 - totalNumber % 10) % 10;
 }
 
 int main()
 {
-    printf("Please enter the letter C for calculating CheckDigit and the letter V for validating an ID by its CheckDigit: \n");
+
+    printf("Please enter the letter C for calculating CheckDigit and the letter V for validating an ID by its CheckDigit:\n");
     char choice;
-    scanf(" %c", &choice);
-    switch (choice)
+    int result = 0, inputNumber = 0, calculatedCheckDigit = 0;
+    result = scanf(" %c", &choice);
+    if (result < 1)
     {
-    case ('V'):
+        return -1;
+    }
+    printf("\n");
+    if (choice == 'C')
     {
-        if (ValidateID() == -1)
+        // Perform check digit
+        printf("Calculating CheckDigit, please enter 8 digits:\n");
+        inputNumber = scanNumber(8);
+        if (inputNumber == -1)
         {
-            printf("\nERROR");
+            return -1;
         }
-        break;
+        calculatedCheckDigit = calculateDigit(inputNumber);
+        printf("\nCheckDigit = %d", calculatedCheckDigit);
     }
-    case ('C'):
+    else if (choice == 'V')
     {
-        if (CheckDigit() == -1)
+        // Perform validation
+        printf("Validating ID, please enter 9 digits ID:\n");
+        inputNumber = scanNumber(9);
+        if (inputNumber == -1)
         {
-            printf("\nERROR");
+            return -1;
         }
-        break;
+        calculatedCheckDigit = calculateDigit(inputNumber / 10);
+        printf("\nYou have entered CheckDigit = %d\nCalculated CheckDigit = %d\n\n", inputNumber % 10, calculatedCheckDigit);
+        if (calculatedCheckDigit == inputNumber % 10)
+        {
+            printf("Legal ID :)");
+        }
+        else
+        {
+            printf("Illegal ID :(");
+        }
     }
-    default:
-    {
-        printf("Oops that's a loophole :(.");
-        break;
-    }
-    }
+    // If neither cases are met, no instructions were given. Exit.
     return 0;
 }
