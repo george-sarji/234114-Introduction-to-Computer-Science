@@ -1,102 +1,93 @@
 #include <stdio.h>
 
-int performCapitalization(int character)
+unsigned long int reverseNumber(unsigned long int encodedNumber)
 {
-    if (character % 2 == 0)
+    unsigned long int reversedNumber = 0;
+    while (encodedNumber > 0)
     {
-        // Make letter capital.
-        // If not capital, capitalize.
-        if (character >= 'a' && character <= 'z')
+        reversedNumber = reversedNumber * 10 + encodedNumber % 10;
+        encodedNumber /= 10;
+    }
+    return reversedNumber;
+}
+
+char capitalizeCharacter(int keycode)
+{
+    // If even number, capitalize.
+    if (keycode % 2 == 0)
+    {
+        if (keycode >= 'a' && keycode <= 'z')
         {
-            character = character - 'a' + 'A';
+            return (char)(keycode - 'a' + 'A');
         }
     }
     else
     {
-        // Make letter small.
-        if (character >= 'A' && character <= 'Z')
+        if (keycode >= 'A' && keycode <= 'Z')
         {
-            character = character - 'A' + 'a';
+            return (char)(keycode - 'A' + 'a');
         }
     }
-    return (char)character;
+    // If uneven number, small letter.
+
+    return (char)keycode;
 }
 
 int decodeWord(unsigned long int reversedNumber)
 {
-    int wordCounter = 0;
-    long unsigned int currentNum = 0, currentDigit = 10;
-    while (reversedNumber != 0)
+    int counter = 0;
+    while (reversedNumber > 0)
     {
-        // Have we reached 3 digits already?
-        if (currentDigit == 10000)
+        if (reversedNumber % 100 >= 'a' && reversedNumber % 100 <= 'z')
         {
-            // Delete the first digit and repeat the process.
-            currentNum = 0;
-            reversedNumber /= 10;
-            currentDigit = 1;
-        }
-        // Take next digit.
-        currentNum = reversedNumber % currentDigit;
-
-        if ((currentNum >= 'a' && currentNum <= 'z'))
-        {
-            // Successful decode.
-            if (wordCounter == 0)
+            // Able to decode. Decode and print.
+            if (counter == 0)
             {
-                // First decode.
                 printf("The decoded word is: ");
             }
-            char currentChar = performCapitalization(currentNum);
-            printf("%c", currentChar);
-
-            // Reset parameters.
-            currentNum = 0;
-            reversedNumber /= currentDigit;
-            wordCounter++;
-            currentDigit = 10;
+            printf("%c", capitalizeCharacter(reversedNumber % 100));
+            reversedNumber /= 100;
+            counter++;
         }
-        else
+        else if (reversedNumber % 1000 >= 'a' && reversedNumber % 1000 <= 'z')
         {
-            if (wordCounter != 0 && currentDigit >= 1000)
+            if (counter == 0)
             {
-                break;
+                printf("The decoded word is: ");
             }
-            currentDigit *= 10;
+            printf("%c", capitalizeCharacter(reversedNumber % 1000));
+            reversedNumber /= 1000;
+            counter++;
+        }
+        else if(counter > 0)
+        {
+            return counter;
+        }
+        else {
+            reversedNumber /= 10;
         }
     }
-    // Go down new line.
-    printf("\n");
-    if (wordCounter == 0)
-    {
-        printf("There is nothing there :(");
-    }
-    else
-    {
-        printf("Done and even had time for coffee :)");
-    }
-    return wordCounter;
-}
-
-int ReverseNumber()
-{
-    unsigned long int providedNum, reversedNum = 0;
-    int temporaryNum;
-    printf("Enter an encoded word and I'll do my best: \n");
-    scanf("%lu", &providedNum);
-    // Reverse the number.
-    while (providedNum != 0)
-    {
-        temporaryNum = providedNum % 10;
-        reversedNum = reversedNum * 10 + temporaryNum;
-        providedNum /= 10;
-    }
-    decodeWord(reversedNum);
-    return 0;
+    return counter;
 }
 
 int main()
 {
-    ReverseNumber();
+    int result = 0;
+    unsigned long int encodedNumber = 0;
+    printf("Enter an encoded word and I'll do my best:\n");
+    result = scanf(" %lu", &encodedNumber);
+    if (result < 1)
+    {
+        return -1;
+    }
+    encodedNumber = reverseNumber(encodedNumber);
+    if (decodeWord(encodedNumber) > 0)
+    {
+        printf("\nDone and even had time for coffee :)");
+    }
+    else
+    {
+        printf("\nThere is nothing there :(");
+    }
     return 0;
 }
