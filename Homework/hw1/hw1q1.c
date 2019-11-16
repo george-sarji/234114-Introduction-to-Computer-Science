@@ -87,6 +87,10 @@ int main()
             printf("Illegal ID :(");
         }
     }
+    else
+    {
+        printf("\nERROR");
+    }
     // If neither cases are met, no instructions were given. Exit.
     return 0;
 }
