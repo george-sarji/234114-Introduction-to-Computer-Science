@@ -4,16 +4,17 @@ int scanNumber(int num)
 {
     // This function will perform the scanning and validation of the input.
     // Return value will be the input number if its valid. If invalid, it will return -1.
-    int totalNum = 0, currentNum = 0, scanResult = 0;
+    int totalNum = 0, scanResult = 0;
+    char currentChar;
     for (int i = 0; i < num; i++)
     {
-        scanResult = scanf(" %1d", &currentNum);
-        if (scanResult < 1)
+        scanResult = scanf(" %c", &currentChar);
+        if (scanResult < 1 || currentChar < '0' || currentChar > '9')
         {
             printf("\nERROR");
             return -1;
         }
-        totalNum = totalNum * 10 + currentNum;
+        totalNum = totalNum * 10 + (currentChar - '0');
     }
     return totalNum;
 }
