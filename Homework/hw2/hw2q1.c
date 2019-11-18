@@ -4,7 +4,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
 
 /*=========================================================================
   Constants and definitions:
@@ -43,12 +42,12 @@ int print_dragonA_sent();
 int print_dragonB_sent();
 int print_dragonC_sent();
 int print_no_dragon_sent();
-int receive_enemy_name();
-int process_digit_total();
-int sendDragonA();
-int sendDragonB();
 int sendDragonC();
+int sendDragonB();
+int sendDragonA();
 int handleDragons();
+int process_digit_total();
+int receive_enemy_name();
 
 int main()
 {
@@ -60,8 +59,7 @@ int main()
 int receive_enemy_name()
 {
 	char enemyName;
-	int ascii_total = 0, previousChar = -1, length = 0;
-	bool isMonotone = true, contains_s = false;
+	int ascii_total = 0, previousChar = -1, length = 0, isMonotone = 1, contains_s = 0;
 	while (scanf(" %c", &enemyName) != EOF && enemyName != '!')
 	{
 		isMonotone = isMonotone && previousChar <= enemyName;
@@ -91,19 +89,19 @@ int sendDragonA(int ascii_sum, int length)
 }
 
 // This function will check whether dragon A should be sent and accordingly send it.
-int sendDragonB(bool is_monotone)
+int sendDragonB(int is_monotone)
 {
-	return is_monotone && print_dragonB_sent();
+	return is_monotone && print_dragonB_sent() != EOF;
 }
 
 // This function will check whether dragon A should be sent and accordingly send it.
-int sendDragonC(int length, bool contains_s)
+int sendDragonC(int length, int contains_s)
 {
 	return length < 6 && !contains_s && print_dragonC_sent();
 }
 
 // This function will handle the sending of the dragons.
-int handleDragons(int length, bool contains_s, int ascii_sum, bool is_monotone)
+int handleDragons(int length, int contains_s, int ascii_sum, int is_monotone)
 {
 	return sendDragonC(length, contains_s) || sendDragonB(is_monotone) || sendDragonA(ascii_sum, length) || print_no_dragon_sent();
 }
