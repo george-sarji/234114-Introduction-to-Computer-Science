@@ -59,12 +59,9 @@ int decodeWord(unsigned long int reversedNumber)
             reversedNumber /= 1000;
             counter++;
         }
-        else if(counter > 0)
+        else
         {
             return counter;
-        }
-        else {
-            reversedNumber /= 10;
         }
     }
     return counter;

@@ -54,11 +54,10 @@ int main()
     {
         return -1;
     }
-    printf("\n");
     if (choice == 'C')
     {
         // Perform check digit
-        printf("Calculating CheckDigit, please enter 8 digits:\n");
+        printf("\nCalculating CheckDigit, please enter 8 digits:\n");
         inputNumber = scanNumber(8);
         if (inputNumber == -1)
         {
@@ -70,7 +69,7 @@ int main()
     else if (choice == 'V')
     {
         // Perform validation
-        printf("Validating ID, please enter 9 digits ID:\n");
+        printf("\nValidating ID, please enter 9 digits ID:\n");
         inputNumber = scanNumber(9);
         if (inputNumber == -1)
         {
