@@ -65,21 +65,10 @@ int receive_enemy_name()
 		isMonotone = isMonotone && previousChar <= enemyName;
 		length++;
 		contains_s = contains_s || enemyName == 's';
-		ascii_total = process_digit_total(ascii_total, enemyName);
+		ascii_total+= enemyName;
 		previousChar = enemyName;
 	}
 	return handleDragons(length, contains_s, ascii_total, isMonotone);
-}
-
-// This function will be used to calculate the total of the digits of the ASCII key codes.
-int process_digit_total(int currentTotal, int asciiCode)
-{
-	while (asciiCode > 0)
-	{
-		currentTotal += asciiCode % 10;
-		asciiCode /= 10;
-	}
-	return currentTotal;
 }
 
 // This function will check whether dragon A should be sent and accordingly send it.
