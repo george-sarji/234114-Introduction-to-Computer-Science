@@ -33,7 +33,7 @@ int handle_operations(int first_matrix[MAX_SIZE][MAX_SIZE], int second_matrix[MA
 int main()
 {
 	print_enter_matrix_size();
-	int matrix_size = 0, first_matrix[MAX_SIZE][MAX_SIZE] = {0}, second_matrix[MAX_SIZE][MAX_SIZE] = {0};
+	int matrix_size = 0, first_matrix[MAX_SIZE][MAX_SIZE], second_matrix[MAX_SIZE][MAX_SIZE];
 	if (!scanf("%d", &matrix_size))
 	{
 		print_invalid_input();
