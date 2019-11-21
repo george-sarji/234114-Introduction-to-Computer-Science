@@ -23,15 +23,33 @@ void print_invalid_input();
 void print_enter_required_operation();
 void print_number(int number);
 void print_enter();
-void receive_matrices();
+int receive_matrices(int first_matrix[MAX_SIZE][MAX_SIZE], int second_matrix[MAX_SIZE][MAX_SIZE], int matrix_size);
 int receive_matrix(int size, int matrix[MAX_SIZE][MAX_SIZE]);
 void mutiply_matrices(int first_matrix[MAX_SIZE][MAX_SIZE], int second_matrix[MAX_SIZE][MAX_SIZE], int size);
 void add_matrices(int first_matrix[MAX_SIZE][MAX_SIZE], int second_matrix[MAX_SIZE][MAX_SIZE], int size);
 void multiply_row_column(int first_matrix[MAX_SIZE][MAX_SIZE], int second_matrix[MAX_SIZE][MAX_SIZE], int size, int row, int column);
+int handle_operations(int first_matrix[MAX_SIZE][MAX_SIZE], int second_matrix[MAX_SIZE][MAX_SIZE], int matrix_size);
 
 int main()
 {
-	receive_matrices();
+	print_enter_matrix_size();
+	int matrix_size = 0, first_matrix[MAX_SIZE][MAX_SIZE] = {0}, second_matrix[MAX_SIZE][MAX_SIZE] = {0};
+	if (!scanf("%d", &matrix_size))
+	{
+		print_invalid_input();
+		return 0;
+	}
+
+	if (receive_matrices(first_matrix, second_matrix, matrix_size) == EOF)
+	{
+		print_invalid_input();
+		return 0;
+	}
+	if (handle_operations(first_matrix, second_matrix, matrix_size) == EOF)
+	{
+		print_invalid_input();
+		return 0;
+	}
 	return 0;
 }
 
@@ -70,40 +88,19 @@ void print_enter()
 	printf("\n");
 }
 
-void receive_matrices()
+int receive_matrices(int first_matrix[MAX_SIZE][MAX_SIZE], int second_matrix[MAX_SIZE][MAX_SIZE], int matrix_size)
 {
-	print_enter_matrix_size();
-	int matrix_size = 0;
-	scanf("%d", &matrix_size);
 	print_enter_first_matrix();
-	int first_matrix[MAX_SIZE][MAX_SIZE], second_matrix[MAX_SIZE][MAX_SIZE];
 	if (receive_matrix(matrix_size, first_matrix) == EOF)
 	{
-		return;
+		return EOF;
 	}
 	print_enter_second_matrix();
 	if (receive_matrix(matrix_size, second_matrix) == EOF)
 	{
-		return;
+		return EOF;
 	}
-	print_enter_required_operation();
-	char operation;
-	if (scanf(" %c", &operation) && (operation == '+' || operation == '*'))
-	{
-		// perform the required operation
-		if (operation == '*')
-		{
-			mutiply_matrices(first_matrix, second_matrix, matrix_size);
-		}
-		else
-		{
-			add_matrices(first_matrix, second_matrix, matrix_size);
-		}
-	}
-	else
-	{
-		print_invalid_input();
-	}
+	return 1;
 }
 
 int receive_matrix(int size, int matrix[MAX_SIZE][MAX_SIZE])
@@ -115,8 +112,7 @@ int receive_matrix(int size, int matrix[MAX_SIZE][MAX_SIZE])
 			// Receive the number and assign into the matrix.
 			if (!scanf("%d", &matrix[i][j]))
 			{
-				print_invalid_input();
-				return -1;
+				return EOF;
 			}
 		}
 	}
@@ -156,4 +152,27 @@ void add_matrices(int first_matrix[MAX_SIZE][MAX_SIZE], int second_matrix[MAX_SI
 		}
 		print_enter();
 	}
+}
+int handle_operations(int first_matrix[MAX_SIZE][MAX_SIZE], int second_matrix[MAX_SIZE][MAX_SIZE], int matrix_size)
+{
+	print_enter_required_operation();
+	char operation;
+	if (scanf(" %c", &operation) && (operation == '+' || operation == '*'))
+	{
+		// perform the required operation
+		if (operation == '*')
+		{
+			mutiply_matrices(first_matrix, second_matrix, matrix_size);
+		}
+		else
+		{
+			add_matrices(first_matrix, second_matrix, matrix_size);
+		}
+	}
+	else
+	{
+		return EOF;
+	}
+
+	return 1;
 }
