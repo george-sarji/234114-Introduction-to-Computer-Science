@@ -62,10 +62,15 @@ int receive_enemy_name()
 	int ascii_total = 0, previousChar = -1, length = 0, isMonotone = 1, contains_s = 0;
 	while (scanf(" %c", &enemyName) != EOF && enemyName != '!')
 	{
+		// Check if the ascii values are a monotone array.
 		isMonotone = isMonotone && previousChar <= enemyName;
+		// Add up to the length counter
 		length++;
+		// Check whether the name so far has contained an S
 		contains_s = contains_s || enemyName == 's';
-		ascii_total+= enemyName;
+		// Add up the ASCII total of the name
+		ascii_total += enemyName;
+		// Update the previous char to the current, preparing for the new scan.
 		previousChar = enemyName;
 	}
 	return handleDragons(length, contains_s, ascii_total, isMonotone);
@@ -92,6 +97,7 @@ int sendDragonC(int length, int contains_s)
 // This function will handle the sending of the dragons.
 int handleDragons(int length, int contains_s, int ascii_sum, int is_monotone)
 {
+	// According to the lazy evaluation process, this function will only send one dragon or none at all.
 	return sendDragonC(length, contains_s) || sendDragonB(is_monotone) || sendDragonA(ascii_sum, length) || print_no_dragon_sent();
 }
 
