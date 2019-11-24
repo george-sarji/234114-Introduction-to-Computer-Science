@@ -154,7 +154,7 @@ void handle_option_3(int platoons[PLATOONS])
 		}
 	}
 	// Call the provided function.
-	print_active_platoons_and_avg(counter, sum / counter);
+	print_active_platoons_and_avg(counter, counter == 0 ? 0 : sum / counter);
 }
 
 void print_army(int platoons[PLATOONS], int counter)
