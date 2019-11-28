@@ -10,6 +10,12 @@
 ==========================================================================*/
 
 /* put your #defines and typedefs here*/
+#define DRAGON_A_MODULO 5
+#define DRAGON_A_MIN_LENGTH 4
+#define DRAGON_C_MAX_LENGTH 6
+#define LETTER_S 's'
+#define END_OF_INPUT '!'
+
 
 /*-------------------------------------------------------------------------
   The main program. (describe what your program does here)
@@ -60,14 +66,14 @@ int receive_enemy_name()
 {
 	char enemyName;
 	int ascii_total = 0, previousChar = -1, length = 0, isMonotone = 1, contains_s = 0;
-	while (scanf(" %c", &enemyName) != EOF && enemyName != '!')
+	while (scanf(" %c", &enemyName) != EOF && enemyName != END_OF_INPUT)
 	{
 		// Check if the ascii values are a monotone array.
 		isMonotone = isMonotone && previousChar <= enemyName;
 		// Add up to the length counter
 		length++;
 		// Check whether the name so far has contained an S
-		contains_s = contains_s || enemyName == 's';
+		contains_s = contains_s || enemyName == LETTER_S;
 		// Add up the ASCII total of the name
 		ascii_total += enemyName;
 		// Update the previous char to the current, preparing for the new scan.
@@ -79,7 +85,7 @@ int receive_enemy_name()
 // This function will check whether dragon A should be sent and accordingly send it.
 int sendDragonA(int ascii_sum, int length)
 {
-	return (ascii_sum % 5 != 0 || length > 4) && print_dragonA_sent();
+	return (ascii_sum % DRAGON_A_MODULO != 0 || length > DRAGON_A_MIN_LENGTH) && print_dragonA_sent();
 }
 
 // This function will check whether dragon A should be sent and accordingly send it.
