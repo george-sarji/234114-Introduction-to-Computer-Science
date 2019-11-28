@@ -22,7 +22,11 @@ void start_game();
 void initialize_board(char board[N][N], int size);
 void game_ticker(char board[N][N], int size);
 int validate_board(char board[N][N], int size);
+int validate_rows(char board[N][N], int size);
+int validate_cols(char board[N][N], int size);
+int validate_diagonals(char board[N][N], int size);
 int main();
+int handle_game_tick(char board[N][N], int size, int player_index, int game_tick, int *valid_board);
 
 /*-------------------------------------------------------------------------
     Implementation
@@ -115,49 +119,76 @@ void initialize_board(char board[N][N], int size)
     }
 }
 
+// This function will handle the validation of the board.
 int validate_board(char board[N][N], int size)
 {
-    int col_counter = 0, row_counter = 0;
+    return validate_cols(board, size) && validate_rows(board, size) && validate_diagonals(board, size);
+}
+
+// This function receives the board and its size and validates the rows.
+int validate_rows(char board[N][N], int size)
+{
+    int counter = 0;
     for (int i = 0; i < size; i++)
     {
-        col_counter = row_counter = 0;
+        counter = 0;
         for (int j = 1; j < size; j++)
         {
             if (board[i][j - 1] == board[i][j] && board[i][j] != '_')
             {
-                row_counter++;
-            }
-            if (board[j - 1][i] == board[j][i] && board[j][i] != '_')
-            {
-                col_counter++;
+                counter++;
             }
         }
-        if (row_counter == size - 1 || col_counter == size - 1)
+        if (counter == size - 1)
         {
             return 0;
         }
     }
+    return 1;
+}
 
-    col_counter = row_counter = 0;
+// This function receives the board and its size and validates the columns.
+int validate_cols(char board[N][N], int size)
+{
+    int counter = 0;
+    for (int i = 0; i < size; i++)
+    {
+        counter = 0;
+        for (int j = 1; j < size; j++)
+        {
+            if (board[j - 1][i] == board[j][i] && board[j][i] != '_')
+            {
+                counter++;
+            }
+        }
+        if (counter == size - 1)
+        {
+            return 0;
+        }
+    }
+    return 1;
+}
+
+// This function receives the board and its size and validates the two diagonals.
+int validate_diagonals(char board[N][N], int size)
+{
+    int alt_counter = 0, main_counter = 0;
     // Check sideways.
     for (int i = 1; i < size; i++)
     {
         if (board[i][i] == board[i - 1][i - 1] && board[i][i] != '_')
         {
-            row_counter++;
+            main_counter++;
         }
         if (board[size - i][i - 1] == board[size - i - 1][i] && board[size - i][i - 1] != '_')
         {
-            col_counter++;
+            alt_counter++;
         }
     }
-    if (row_counter == size - 1 || col_counter == size - 1)
-    {
-        return 0;
-    }
-    return 1;
+    return !(main_counter == size - 1 || alt_counter == size - 1);
 }
 
+// This function receives the board and its size and runs the main game logic.
 void game_ticker(char board[N][N], int size)
 {
     int turns = 0, player_index = 1, current_sign = 'X', valid_board = 1, current_col = 0, current_row = 0;
@@ -165,28 +196,43 @@ void game_ticker(char board[N][N], int size)
     while (valid_board)
     {
         player_index = (turns % 2 == 0) ? 2 : 1;
-        if (!scanf("%d", &current_row) || !scanf("%d", &current_col) || board[current_row - 1][current_col - 1] != '_')
-        {
-            print_error();
-            continue;
-        }
-        // If not an error, this code processes.
-        // Entered
-        board[current_row - 1][current_col - 1] = current_sign;
+        turns = handle_game_tick(board, size, player_index, turns, &valid_board);
+    }
+}
+
+// This function receives the board, its size, the current game tick and current player index.
+// Function will handle the logic for every single game tick (turn)
+int handle_game_tick(char board[N][N], int size, int player_index, int game_tick, int *valid_board)
+{
+    // Receive the required numbers:
+    int current_col = 0, current_row = 0;
+    if (!scanf("%d", &current_row) || !scanf("%d", &current_col) || (current_row > 0 && board[current_row - 1][current_col - 1] != '_'))
+    {
+        print_error();
+        return game_tick;
+    }
+    else if (current_row < 0)
+    {
+        // Requested undo. Perform history switch.
+    }
+    else
+    {
+        // There was a successful entry.
+        board[current_row - 1][current_col - 1] = game_tick % 2 == 0 ? 'X' : 'O';
         print_board(board, size);
         if (!validate_board(board, size))
         {
+            *valid_board = 0;
             print_winner(player_index);
-            return;
+            return game_tick;
         }
-        current_sign = current_sign == 'X' ? 'O' : 'X';
-        if (turns + 1 == size * size)
+        if (game_tick + 1 == size * size)
         {
             // Tie. End game.
             print_tie();
-            return;
+            return game_tick;
         }
         print_player_turn(player_index);
-        turns++;
     }
+    return game_tick + 1;
 }
