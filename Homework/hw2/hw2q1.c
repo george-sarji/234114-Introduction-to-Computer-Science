@@ -97,7 +97,7 @@ int sendDragonB(int is_monotone)
 // This function will check whether dragon A should be sent and accordingly send it.
 int sendDragonC(int length, int contains_s)
 {
-	return length < 6 && !contains_s && print_dragonC_sent();
+	return length < DRAGON_C_MAX_LENGTH && !contains_s && print_dragonC_sent();
 }
 
 // This function will handle the sending of the dragons.
