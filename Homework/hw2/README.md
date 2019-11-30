@@ -25,3 +25,8 @@ Hard coded number(s) found in hw2q1.c:
 
 Reduced 10 points for hard coded number(s) usage
 ```
+
+
+#### Resubmitted: 30/NOV/2019
+
+Confirmation code: 234114-201901-xxxxxxx-3026519
