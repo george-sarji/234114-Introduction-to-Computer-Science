@@ -7,6 +7,7 @@
     Constants and definitions:
 -------------------------------------------------------------------------*/
 #define N 11
+// TODO: Add definitions required by history system
 
 /*-------------------------------------------------------------------------
     Function declaration
@@ -27,6 +28,7 @@ int validate_cols(char board[N][N], int size);
 int validate_diagonals(char board[N][N], int size);
 int main();
 int handle_game_tick(char board[N][N], int size, int player_index, int game_tick, int *valid_board);
+// TODO: Add function to reverse the board by x game ticks
 
 /*-------------------------------------------------------------------------
     Implementation
@@ -214,6 +216,7 @@ int handle_game_tick(char board[N][N], int size, int player_index, int game_tick
     else if (current_row < 0)
     {
         // Requested undo. Perform history switch.
+        // TODO: Perform history logic here and utilize function to reverse the board by the received x ticks
     }
     else
     {
