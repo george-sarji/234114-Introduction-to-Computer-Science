@@ -7,7 +7,7 @@
     Constants and definitions:
 -------------------------------------------------------------------------*/
 #define N 11
-// TODO: Add definitions required by history system
+#define MAX_TICKS 11 * 11
 
 /*-------------------------------------------------------------------------
     Function declaration
@@ -27,8 +27,8 @@ int validate_rows(char board[N][N], int size);
 int validate_cols(char board[N][N], int size);
 int validate_diagonals(char board[N][N], int size);
 int main();
-int handle_game_tick(char board[N][N], int size, int player_index, int game_tick, int *valid_board);
-// TODO: Add function to reverse the board by x game ticks
+int handle_game_tick(char board[N][N], int size, int player_index, int game_tick, int *valid_board, char history[MAX_TICKS][N][N]);
+void reverse_board(char board[N][N], char history[MAX_TICKS][N][N], int ticks, int current_tick);
 
 /*-------------------------------------------------------------------------
     Implementation
@@ -195,20 +195,61 @@ void game_ticker(char board[N][N], int size)
 {
     int turns = 0, player_index = 1, current_sign = 'X', valid_board = 1, current_col = 0, current_row = 0;
     print_player_turn(1);
+    char history[MAX_TICKS][N][N];
     while (valid_board)
     {
         player_index = (turns % 2 == 0) ? 2 : 1;
-        turns = handle_game_tick(board, size, player_index, turns, &valid_board);
+        turns = handle_game_tick(board, size, player_index, turns, &valid_board, history);
     }
 }
 
 // This function receives the board, its size, the current game tick and current player index.
 // Function will handle the logic for every single game tick (turn)
-int handle_game_tick(char board[N][N], int size, int player_index, int game_tick, int *valid_board)
+int handle_game_tick(char board[N][N], int size, int player_index, int game_tick, int *valid_board, char history[MAX_TICKS][N][N])
 {
     // Receive the required numbers:
     int current_col = 0, current_row = 0;
-    if (!scanf("%d", &current_row) || !scanf("%d", &current_col) || (current_row > 0 && board[current_row - 1][current_col - 1] != '_'))
+    // TODO: Reconstruct conditionals in optimal condition to receive one input
+    if (scanf("%d", &current_row))
+    {
+        if (current_row > 0)
+        {
+            // Scan for columns
+            if (scanf("%d", &current_col))
+            {
+                if (current_col < 0)
+                {
+                    // Print an error.
+                    print_error();
+                    return game_tick;
+                }
+                else if(current_col > size && current_row > size) {
+                    // Valid logic. Perform move.
+                }
+                else {
+                    print_error();
+                    return game_tick;
+                }
+            }
+            else
+            {
+                print_error();
+                return game_tick;
+            }
+        }
+        else
+        {
+            // TODO: Reverse
+        }
+        // Scan for columns
+    }
+    else
+    {
+        print_error();
+        return game_tick;
+    }
+
+    if (!scanf("%d", &current_row) && current_row > 0 || !scanf("%d", &current_col) || (current_row > 0 && board[current_row - 1][current_col - 1] != '_'))
     {
         print_error();
         return game_tick;
@@ -216,6 +257,7 @@ int handle_game_tick(char board[N][N], int size, int player_index, int game_tick
     else if (current_row < 0)
     {
         // Requested undo. Perform history switch.
+        printf("Entered reverse. Used %d", current_row);
         // TODO: Perform history logic here and utilize function to reverse the board by the received x ticks
     }
     else
@@ -238,4 +280,16 @@ int handle_game_tick(char board[N][N], int size, int player_index, int game_tick
         print_player_turn(player_index);
     }
     return game_tick + 1;
+}
+
+void reverse_board(char board[N][N], char history[MAX_TICKS][N][N], int ticks, int current_tick)
+{
+    if (ticks > current_tick)
+    {
+        board = history[0];
+    }
+    else
+    {
+        board = history[ticks];
+    }
 }
