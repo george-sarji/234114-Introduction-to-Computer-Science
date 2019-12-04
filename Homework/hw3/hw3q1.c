@@ -2,7 +2,6 @@
     Include files:
 -------------------------------------------------------------------------*/
 #include <stdio.h>
-#include <stdbool.h>
 
 /*-------------------------------------------------------------------------
     Constants and definitions:
@@ -12,6 +11,8 @@
 #define EMPTY_SPACE '_'
 #define PLAYER_ONE 'X'
 #define PLAYER_TWO 'O'
+#define TRUE 1
+#define FALSE 0
 
 /*-------------------------------------------------------------------------
     Function declaration
@@ -27,11 +28,22 @@ void initialize_game();
 void initialize_game_board(char game_board[N][N], int board_size);
 void game_ticker(char game_board[N][N], char game_history[MAX_TICKS][N][N], int board_size);
 void add_history_entry(char game_board[N][N], char history_board[MAX_TICKS][N][N], int board_size, int current_tick);
-void tick_handler(char game_board[N][N], char game_history[MAX_TICKS][N][N], int board_size, int current_tick);
+int tick_handler(char game_board[N][N], char game_history[MAX_TICKS][N][N], int board_size, int current_tick);
+void reverse_board(char game_board[N][N], char game_history[MAX_TICKS][N][N], int board_size, int current_tick, int ticks);
+int validate_column(char game_board[N][N], int board_size, int column);
+int validate_row(char game_board[N][N], int board_size, int row);
+
+int main();
 
 /*-------------------------------------------------------------------------
     Implementation
 -------------------------------------------------------------------------*/
+
+int main()
+{
+    initialize_game();
+    return 0;
+}
 
 //print welcome message
 //1 lines
@@ -102,6 +114,7 @@ void initialize_game()
     scanf("%d", &board_size);
     // We received the board size. Initialize the board.
     initialize_game_board(game_board, board_size);
+    game_ticker(game_board, history_board, board_size);
 }
 
 // This function will initialize the game board with empty spaces
@@ -114,16 +127,15 @@ void initialize_game_board(char game_board[N][N], int board_size)
             game_board[row][col] = EMPTY_SPACE;
         }
     }
+    print_board(game_board, board_size);
 }
 
 void game_ticker(char game_board[N][N], char game_history[MAX_TICKS][N][N], int board_size)
 {
-    bool is_board_valid = true;
-    int current_game_tick = 0;
+    int current_game_tick = 0, is_board_valid = TRUE;
     while (is_board_valid)
     {
-        tick_handler(game_board, game_history, board_size, current_game_tick);
-        current_game_tick++;
+        current_game_tick = tick_handler(game_board, game_history, board_size, current_game_tick);
     }
 }
 
@@ -138,38 +150,98 @@ void add_history_entry(char game_board[N][N], char history_board[MAX_TICKS][N][N
     }
 }
 
-void tick_handler(char game_board[N][N], char game_history[MAX_TICKS][N][N], int board_size, int current_tick)
+int tick_handler(char game_board[N][N], char game_history[MAX_TICKS][N][N], int board_size, int current_tick)
 {
     // Handle the tick.
     // Receive input.
     int row = 0, col = 0;
-    bool throw_error = false;
     // Print player input
     print_player_turn(current_tick % 2 + 1);
-    if (!scanf("%d", &row))
-    {
-        // Throw error
-        throw_error = true;
-    }
-    else
+    if (scanf("%d", &row))
     {
         // Check if this is a reverse or a valid input operation
         if (row < 0)
         {
+            if (row % 2 == 0)
+            {
+                print_error();
+                return current_tick;
+            }
             // Reverse
+            reverse_board(game_board, game_history, board_size, current_tick, row);
+            print_board(game_board, board_size);
+            return current_tick + row;
         }
         else
         {
-            if (!scanf("%d", &col) || row > board_size || col > board_size || col == 0 || row == 0 || game_board[row][col] != EMPTY_SPACE)
+            if (!scanf("%d", &col) || row > board_size || col > board_size || col == 0 || row == 0 || game_board[row - 1][col - 1] != EMPTY_SPACE)
             {
                 print_error();
+                return current_tick;
             }
             else
             {
                 // Allowed move.
-                game_board[row][col] = current_tick % 2 == 0 ? PLAYER_ONE : PLAYER_TWO;
+                add_history_entry(game_board, game_history, board_size, current_tick);
+                game_board[row - 1][col - 1] = current_tick % 2 == 0 ? PLAYER_ONE : PLAYER_TWO;
                 print_board(game_board, board_size);
             }
         }
     }
+
+    return current_tick + 1;
+}
+void reverse_board(char game_board[N][N], char game_history[MAX_TICKS][N][N], int board_size, int current_tick, int ticks)
+{
+    for (int row = 0; row < board_size; row++)
+    {
+        for (int col = 0; col < board_size; col++)
+        {
+            game_board[row][col] = game_history[current_tick + ticks][row][col];
+        }
+    }
+}
+
+int validate_column(char game_board[N][N], int board_size, int column)
+{
+    for (int row = 1; row < board_size; row++)
+    {
+        char current = game_board[row][column], previous = game_board[row - 1][column];
+        if (current != previous && current != EMPTY_SPACE && previous != EMPTY_SPACE)
+            return TRUE;
+    }
+    return FALSE;
+}
+
+int validate_row(char game_board[N][N], int board_size, int row)
+{
+    for (int column = 1; column < board_size; column++)
+    {
+        char current = game_board[row][column], previous = game_board[row][column - 1];
+        if (current != previous && current != EMPTY_SPACE && previous != EMPTY_SPACE)
+            return TRUE;
+    }
+    return FALSE;
+}
+
+int validate_primary_diagonal(char game_board[N][N], int board_size)
+{
+    for (int i = 1; i < board_size; i++)
+    {
+        char current = game_board[i][i], previous = game_board[i - 1][i - 1];
+        if (current != previous && current != EMPTY_SPACE && previous != EMPTY_SPACE)
+            return TRUE;
+    }
+    return FALSE;
+}
+
+int validate_secondary_diagonal(char game_board[N][N], int board_size)
+{
+    for (int i = 1; i < board_size; i++)
+    {
+        char current = game_board[i][board_size - i - 1], previous = game_board[i - 1][board_size - i - 2];
+        if (current != previous && current != EMPTY_SPACE && previous != EMPTY_SPACE)
+            return TRUE;
+    }
+    return FALSE;
 }
