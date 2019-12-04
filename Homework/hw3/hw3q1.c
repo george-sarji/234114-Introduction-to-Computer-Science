@@ -36,7 +36,7 @@ int validate_secondary_diagonal(char game_board[N][N], int board_size);
 int validate_board(char game_board[N][N], int board_size, int column, int row);
 int is_board_full(char game_board[N][N], int board_size);
 int handle_reverse(char game_board[N][N], char history_board[MAX_TICKS][N][N], int board_size, int current_tick, int ticks);
-
+int handle_entry(char game_board[N][N], char history_board[MAX_TICKS][N][N], int board_size, int row, int column, int current_tick, int *valid_board);
 int main();
 
 /*-------------------------------------------------------------------------
@@ -189,11 +189,7 @@ int tick_handler(char game_board[N][N], char game_history[MAX_TICKS][N][N], int 
             else
             {
                 // Allowed move.
-                add_history_entry(game_board, game_history, board_size, current_tick);
-                game_board[row - 1][col - 1] = current_tick % 2 == 0 ? PLAYER_ONE : PLAYER_TWO;
-                print_board(game_board, board_size);
-                *valid_board = validate_board(game_board, board_size, col - 1, row - 1);
-                result_tick++;
+                return handle_entry(game_board, game_history, board_size, row, col, current_tick, valid_board);
             }
         }
     }
@@ -295,4 +291,17 @@ int handle_reverse(char game_board[N][N], char history_board[MAX_TICKS][N][N], i
     print_board(game_board, board_size);
     print_player_turn((current_tick + 1) % 2 + 1);
     return current_tick + ticks;
+}
+
+int handle_entry(char game_board[N][N], char history_board[MAX_TICKS][N][N], int board_size, int row, int column, int current_tick, int *valid_board)
+{
+    add_history_entry(game_board, history_board, board_size, current_tick);
+    game_board[row - 1][column - 1] = current_tick % 2 == 0 ? PLAYER_ONE : PLAYER_TWO;
+    print_board(game_board, board_size);
+    *valid_board = validate_board(game_board, board_size, column - 1, row - 1);
+    if (*valid_board)
+    {
+        print_player_turn((current_tick + 1) % 2 + 1);
+    }
+    return current_tick + 1;
 }
