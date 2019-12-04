@@ -2,6 +2,7 @@
     Include files:
 -------------------------------------------------------------------------*/
 #include <stdio.h>
+#include <stdbool.h>
 
 /*-------------------------------------------------------------------------
     Constants and definitions:
@@ -11,8 +12,6 @@
 #define EMPTY_SPACE '_'
 #define PLAYER_ONE 'X'
 #define PLAYER_TWO 'O'
-#define TRUE 1
-#define FALSE 0
 
 /*-------------------------------------------------------------------------
     Function declaration
@@ -28,10 +27,14 @@ void initialize_game();
 void initialize_game_board(char game_board[N][N], int board_size);
 void game_ticker(char game_board[N][N], char game_history[MAX_TICKS][N][N], int board_size);
 void add_history_entry(char game_board[N][N], char history_board[MAX_TICKS][N][N], int board_size, int current_tick);
-int tick_handler(char game_board[N][N], char game_history[MAX_TICKS][N][N], int board_size, int current_tick);
+int tick_handler(char game_board[N][N], char game_history[MAX_TICKS][N][N], int board_size, int current_tick, int *valid_board);
 void reverse_board(char game_board[N][N], char game_history[MAX_TICKS][N][N], int board_size, int current_tick, int ticks);
 int validate_column(char game_board[N][N], int board_size, int column);
 int validate_row(char game_board[N][N], int board_size, int row);
+int validate_primary_diagonal(char game_board[N][N], int board_size);
+int validate_secondary_diagonal(char game_board[N][N], int board_size);
+int validate_board(char game_board[N][N], int board_size, int column, int row);
+int is_board_full(char game_board[N][N], int board_size);
 
 int main();
 
@@ -132,10 +135,21 @@ void initialize_game_board(char game_board[N][N], int board_size)
 
 void game_ticker(char game_board[N][N], char game_history[MAX_TICKS][N][N], int board_size)
 {
-    int current_game_tick = 0, is_board_valid = TRUE;
+    int current_game_tick = 0, is_board_valid = true;
+    print_player_turn(1);
     while (is_board_valid)
     {
-        current_game_tick = tick_handler(game_board, game_history, board_size, current_game_tick);
+        current_game_tick = tick_handler(game_board, game_history, board_size, current_game_tick, &is_board_valid);
+    }
+    // The board is no longer valid. That means someone won or there's a tie.
+    if (current_game_tick == board_size * board_size)
+    {
+        // TIE.
+        print_tie();
+    }
+    else
+    {
+        print_winner((current_game_tick % 2) + 1);
     }
 }
 
@@ -150,13 +164,12 @@ void add_history_entry(char game_board[N][N], char history_board[MAX_TICKS][N][N
     }
 }
 
-int tick_handler(char game_board[N][N], char game_history[MAX_TICKS][N][N], int board_size, int current_tick)
+int tick_handler(char game_board[N][N], char game_history[MAX_TICKS][N][N], int board_size, int current_tick, int *valid_board)
 {
     // Handle the tick.
     // Receive input.
-    int row = 0, col = 0;
+    int row = 0, col = 0, result_tick = current_tick;
     // Print player input
-    print_player_turn(current_tick % 2 + 1);
     if (scanf("%d", &row))
     {
         // Check if this is a reverse or a valid input operation
@@ -170,7 +183,7 @@ int tick_handler(char game_board[N][N], char game_history[MAX_TICKS][N][N], int 
             // Reverse
             reverse_board(game_board, game_history, board_size, current_tick, row);
             print_board(game_board, board_size);
-            return current_tick + row;
+            result_tick += row;
         }
         else
         {
@@ -185,11 +198,15 @@ int tick_handler(char game_board[N][N], char game_history[MAX_TICKS][N][N], int 
                 add_history_entry(game_board, game_history, board_size, current_tick);
                 game_board[row - 1][col - 1] = current_tick % 2 == 0 ? PLAYER_ONE : PLAYER_TWO;
                 print_board(game_board, board_size);
+                *valid_board = validate_board(game_board, board_size, col - 1, row - 1);
+                result_tick++;
             }
         }
     }
+    if (*valid_board)
+        print_player_turn((current_tick + 1) % 2 + 1);
 
-    return current_tick + 1;
+    return result_tick;
 }
 void reverse_board(char game_board[N][N], char game_history[MAX_TICKS][N][N], int board_size, int current_tick, int ticks)
 {
@@ -207,10 +224,10 @@ int validate_column(char game_board[N][N], int board_size, int column)
     for (int row = 1; row < board_size; row++)
     {
         char current = game_board[row][column], previous = game_board[row - 1][column];
-        if (current != previous && current != EMPTY_SPACE && previous != EMPTY_SPACE)
-            return TRUE;
+        if (current == EMPTY_SPACE || previous == EMPTY_SPACE || current != previous)
+            return true;
     }
-    return FALSE;
+    return false;
 }
 
 int validate_row(char game_board[N][N], int board_size, int row)
@@ -218,10 +235,10 @@ int validate_row(char game_board[N][N], int board_size, int row)
     for (int column = 1; column < board_size; column++)
     {
         char current = game_board[row][column], previous = game_board[row][column - 1];
-        if (current != previous && current != EMPTY_SPACE && previous != EMPTY_SPACE)
-            return TRUE;
+        if (current == EMPTY_SPACE || previous == EMPTY_SPACE || current != previous)
+            return true;
     }
-    return FALSE;
+    return false;
 }
 
 int validate_primary_diagonal(char game_board[N][N], int board_size)
@@ -229,19 +246,38 @@ int validate_primary_diagonal(char game_board[N][N], int board_size)
     for (int i = 1; i < board_size; i++)
     {
         char current = game_board[i][i], previous = game_board[i - 1][i - 1];
-        if (current != previous && current != EMPTY_SPACE && previous != EMPTY_SPACE)
-            return TRUE;
+        if (current == EMPTY_SPACE || previous == EMPTY_SPACE || current != previous)
+            return true;
     }
-    return FALSE;
+    return false;
 }
 
 int validate_secondary_diagonal(char game_board[N][N], int board_size)
 {
     for (int i = 1; i < board_size; i++)
     {
-        char current = game_board[i][board_size - i - 1], previous = game_board[i - 1][board_size - i - 2];
-        if (current != previous && current != EMPTY_SPACE && previous != EMPTY_SPACE)
-            return TRUE;
+        char current = game_board[i][board_size - i - 1], previous = game_board[i - 1][board_size - i];
+        if (current == EMPTY_SPACE || previous == EMPTY_SPACE || current != previous)
+            return true;
     }
-    return FALSE;
+    return false;
+}
+
+int validate_board(char game_board[N][N], int board_size, int column, int row)
+{
+    return validate_primary_diagonal(game_board, board_size) && validate_secondary_diagonal(game_board, board_size) &&
+           validate_column(game_board, board_size, column) && validate_row(game_board, board_size, row) && !is_board_full(game_board, board_size);
+}
+
+int is_board_full(char game_board[N][N], int board_size)
+{
+    for (int row = 0; row < board_size; row++)
+    {
+        for (int col = 0; col < board_size; col++)
+        {
+            if (game_board[row][col] == EMPTY_SPACE)
+                return false;
+        }
+    }
+    return true;
 }
