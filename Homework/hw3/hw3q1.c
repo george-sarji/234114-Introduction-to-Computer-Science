@@ -139,19 +139,12 @@ void game_ticker(char game_board[N][N], char game_history[MAX_TICKS][N][N], int 
     int current_game_tick = 0, is_board_valid = true;
     print_player_turn(1);
     while (is_board_valid)
-    {
         current_game_tick = tick_handler(game_board, game_history, board_size, current_game_tick, &is_board_valid);
-    }
     // The board is no longer valid. That means someone won or there's a tie.
     if (current_game_tick == board_size * board_size)
-    {
-        // TIE.
         print_tie();
-    }
     else
-    {
         print_winner((current_game_tick % 2) + 1);
-    }
 }
 
 void add_history_entry(char game_board[N][N], char history_board[MAX_TICKS][N][N], int board_size, int current_tick)
@@ -168,35 +161,21 @@ void add_history_entry(char game_board[N][N], char history_board[MAX_TICKS][N][N
 // Main logic for handling ticks
 int tick_handler(char game_board[N][N], char game_history[MAX_TICKS][N][N], int board_size, int current_tick, int *valid_board)
 {
-    // Handle the tick.
-    // Receive input.
-    int row = 0, col = 0, result_tick = current_tick;
-    // Print player input
-    if (scanf("%d", &row))
+    int row = 0, col = 0;
+    scanf("%d", &row);
+    if (row < 0)
+        return handle_reverse(game_board, game_history, board_size, current_tick, row);
+    else
     {
-        // Check if this is a reverse or a valid input operation
-        if (row < 0)
+        if (!scanf("%d", &col) || row > board_size || col > board_size || col == 0 || row == 0 || game_board[row - 1][col - 1] != EMPTY_SPACE)
         {
-            return handle_reverse(game_board, game_history, board_size, current_tick, row);
+            print_error();
+            return current_tick;
         }
         else
-        {
-            if (!scanf("%d", &col) || row > board_size || col > board_size || col == 0 || row == 0 || game_board[row - 1][col - 1] != EMPTY_SPACE)
-            {
-                print_error();
-                return current_tick;
-            }
-            else
-            {
-                // Allowed move.
-                return handle_entry(game_board, game_history, board_size, row, col, current_tick, valid_board);
-            }
-        }
+            return handle_entry(game_board, game_history, board_size, row, col, current_tick, valid_board);
     }
-    if (*valid_board)
-        print_player_turn((current_tick + 1) % 2 + 1);
-
-    return result_tick;
+    return current_tick;
 }
 
 // Reverses the board to a previous state
