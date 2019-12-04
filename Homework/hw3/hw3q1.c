@@ -28,8 +28,8 @@ int validate_cols(char board[N][N], int size);
 int validate_diagonals(char board[N][N], int size);
 int main();
 int handle_game_tick(char board[N][N], int size, int player_index, int game_tick, int *valid_board, char history[MAX_TICKS][N][N]);
-void reverse_board(char board[N][N], char history[MAX_TICKS][N][N], int ticks, int current_tick);
-
+void reverse_board(char board[N][N], char history[MAX_TICKS][N][N], int ticks, int current_tick, int size);
+void add_history_entry(char board[N][N], char history_entry[N][N], int size);
 /*-------------------------------------------------------------------------
     Implementation
 -------------------------------------------------------------------------*/
@@ -207,82 +207,67 @@ void game_ticker(char board[N][N], int size)
 // Function will handle the logic for every single game tick (turn)
 int handle_game_tick(char board[N][N], int size, int player_index, int game_tick, int *valid_board, char history[MAX_TICKS][N][N])
 {
-    // Receive the required numbers:
-    int current_col = 0, current_row = 0;
+    int current_row = 0, current_col = 0, throw_error = 0;
     // TODO: Reconstruct conditionals in optimal condition to receive one input
-    if (scanf("%d", &current_row))
+    if (!scanf(" %d", &current_row) || current_row > size || current_row == 0)
     {
-        if (current_row > 0)
-        {
-            // Scan for columns
-            if (scanf("%d", &current_col))
-            {
-                if (current_col < 0)
-                {
-                    // Print an error.
-                    print_error();
-                    return game_tick;
-                }
-                else if(current_col > size && current_row > size) {
-                    // Valid logic. Perform move.
-                }
-                else {
-                    print_error();
-                    return game_tick;
-                }
-            }
-            else
-            {
-                print_error();
-                return game_tick;
-            }
-        }
-        else
-        {
-            // TODO: Reverse
-        }
-        // Scan for columns
-    }
-    else
-    {
-        print_error();
-        return game_tick;
-    }
-
-    if (!scanf("%d", &current_row) && current_row > 0 || !scanf("%d", &current_col) || (current_row > 0 && board[current_row - 1][current_col - 1] != '_'))
-    {
-        print_error();
-        return game_tick;
+        // Throw error.
+        throw_error = 1;
     }
     else if (current_row < 0)
     {
-        // Requested undo. Perform history switch.
-        printf("Entered reverse. Used %d", current_row);
-        // TODO: Perform history logic here and utilize function to reverse the board by the received x ticks
+        // Logic for reverse
+        printf("Reverse requested for %d turns\n", current_row);
+        reverse_board(board, history, current_row, game_tick, size);
+        print_board(board, size);
+        return game_tick;
     }
     else
     {
-        // There was a successful entry.
-        board[current_row - 1][current_col - 1] = game_tick % 2 == 0 ? 'X' : 'O';
-        print_board(board, size);
-        if (!validate_board(board, size))
+        // Logic for second scan
+        if (!scanf(" %d", &current_col) || current_col > size || current_col == 0 || board[current_row - 1][current_col - 1] != '_')
         {
-            *valid_board = 0;
-            print_winner(player_index);
-            return game_tick;
+            // Throw error
+            throw_error = 1;
         }
-        if (game_tick + 1 == size * size)
+        else
         {
-            // Tie. End game.
-            print_tie();
-            return game_tick;
+            // Implement move logic
+            // There was a successful entry.
+            add_history_entry(board, history[game_tick], size);
+            print_board(history[game_tick], size);
+            board[current_row - 1][current_col - 1] = game_tick % 2 == 0 ? 'X' : 'O';
+            print_board(board, size);
+            if (!validate_board(board, size))
+            {
+                *valid_board = 0;
+                print_winner(player_index);
+                return game_tick;
+            }
+            if (game_tick + 1 == size * size)
+            {
+                // Tie. End game.
+                print_tie();
+                return game_tick;
+            }
+            print_player_turn(player_index);
         }
-        print_player_turn(player_index);
     }
-    return game_tick + 1;
+
+    if (throw_error)
+    {
+        print_error();
+        return game_tick;
+    }
+    else
+    {
+        return game_tick + 1;
+    }
+    // In this function, we should have the following psuedo-code:
+    // 1) Make sure both inputs are valid (seperate scans)
 }
 
-void reverse_board(char board[N][N], char history[MAX_TICKS][N][N], int ticks, int current_tick)
+void reverse_board(char board[N][N], char history[MAX_TICKS][N][N], int ticks, int current_tick, int size)
 {
     if (ticks > current_tick)
     {
@@ -290,6 +275,20 @@ void reverse_board(char board[N][N], char history[MAX_TICKS][N][N], int ticks, i
     }
     else
     {
-        board = history[ticks];
+        print_board(board, size);
+        printf("Reversing board\n");
+        board = history[current_tick - ticks];
+        print_board(board, size);
+    }
+}
+
+void add_history_entry(char board[N][N], char history_entry[N][N], int size)
+{
+    for (int i = 0; i < size; i++)
+    {
+        for (int j = 0; j < size; j++)
+        {
+            history_entry[i][j] = board[i][j];
+        }
     }
 }
