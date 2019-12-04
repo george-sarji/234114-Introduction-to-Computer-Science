@@ -8,7 +8,7 @@
     Constants and definitions:
 -------------------------------------------------------------------------*/
 #define N 11
-#define MAX_TICKS 121
+#define MAX_TICKS N*N
 #define EMPTY_SPACE '_'
 #define PLAYER_ONE 'X'
 #define PLAYER_TWO 'O'
