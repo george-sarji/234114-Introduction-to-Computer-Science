@@ -35,6 +35,7 @@ int validate_primary_diagonal(char game_board[N][N], int board_size);
 int validate_secondary_diagonal(char game_board[N][N], int board_size);
 int validate_board(char game_board[N][N], int board_size, int column, int row);
 int is_board_full(char game_board[N][N], int board_size);
+int handle_reverse(char game_board[N][N], char history_board[MAX_TICKS][N][N], int board_size, int current_tick, int ticks);
 
 int main();
 
@@ -164,6 +165,7 @@ void add_history_entry(char game_board[N][N], char history_board[MAX_TICKS][N][N
     }
 }
 
+// Main logic for handling ticks
 int tick_handler(char game_board[N][N], char game_history[MAX_TICKS][N][N], int board_size, int current_tick, int *valid_board)
 {
     // Handle the tick.
@@ -175,15 +177,7 @@ int tick_handler(char game_board[N][N], char game_history[MAX_TICKS][N][N], int 
         // Check if this is a reverse or a valid input operation
         if (row < 0)
         {
-            if (row % 2 == 0)
-            {
-                print_error();
-                return current_tick;
-            }
-            // Reverse
-            reverse_board(game_board, game_history, board_size, current_tick, row);
-            print_board(game_board, board_size);
-            result_tick += row;
+            return handle_reverse(game_board, game_history, board_size, current_tick, row);
         }
         else
         {
@@ -208,6 +202,8 @@ int tick_handler(char game_board[N][N], char game_history[MAX_TICKS][N][N], int 
 
     return result_tick;
 }
+
+// Reverses the board to a previous state
 void reverse_board(char game_board[N][N], char game_history[MAX_TICKS][N][N], int board_size, int current_tick, int ticks)
 {
     for (int row = 0; row < board_size; row++)
@@ -219,6 +215,7 @@ void reverse_board(char game_board[N][N], char game_history[MAX_TICKS][N][N], in
     }
 }
 
+// Returns whether the given column is valid for a new tick
 int validate_column(char game_board[N][N], int board_size, int column)
 {
     for (int row = 1; row < board_size; row++)
@@ -230,6 +227,7 @@ int validate_column(char game_board[N][N], int board_size, int column)
     return false;
 }
 
+// Returns whether the given row is valid for a new tick
 int validate_row(char game_board[N][N], int board_size, int row)
 {
     for (int column = 1; column < board_size; column++)
@@ -241,6 +239,7 @@ int validate_row(char game_board[N][N], int board_size, int row)
     return false;
 }
 
+// Returns whether the primary diagonal is valid for a new tick
 int validate_primary_diagonal(char game_board[N][N], int board_size)
 {
     for (int i = 1; i < board_size; i++)
@@ -252,6 +251,7 @@ int validate_primary_diagonal(char game_board[N][N], int board_size)
     return false;
 }
 
+// Returns whether the secondary diagonal within the board is valid for a new tick
 int validate_secondary_diagonal(char game_board[N][N], int board_size)
 {
     for (int i = 1; i < board_size; i++)
@@ -263,12 +263,14 @@ int validate_secondary_diagonal(char game_board[N][N], int board_size)
     return false;
 }
 
+// Returns whether the board is valid for a new tick or not
 int validate_board(char game_board[N][N], int board_size, int column, int row)
 {
     return validate_primary_diagonal(game_board, board_size) && validate_secondary_diagonal(game_board, board_size) &&
            validate_column(game_board, board_size, column) && validate_row(game_board, board_size, row) && !is_board_full(game_board, board_size);
 }
 
+// Checks whether the board is completely full.
 int is_board_full(char game_board[N][N], int board_size)
 {
     for (int row = 0; row < board_size; row++)
@@ -280,4 +282,17 @@ int is_board_full(char game_board[N][N], int board_size)
         }
     }
     return true;
+}
+
+int handle_reverse(char game_board[N][N], char history_board[MAX_TICKS][N][N], int board_size, int current_tick, int ticks)
+{
+    if (ticks % 2 == 0)
+    {
+        print_error();
+        return current_tick;
+    }
+    reverse_board(game_board, history_board, board_size, current_tick, ticks);
+    print_board(game_board, board_size);
+    print_player_turn((current_tick + 1) % 2 + 1);
+    return current_tick + ticks;
 }
