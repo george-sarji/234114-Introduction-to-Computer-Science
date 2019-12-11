@@ -8,7 +8,7 @@
     Constants and definitions:
 -------------------------------------------------------------------------*/
 #define N 11
-#define MAX_TICKS N*N
+#define MAX_TICKS N *N
 #define EMPTY_SPACE '_'
 #define PLAYER_ONE 'X'
 #define PLAYER_TWO 'O'
@@ -37,6 +37,7 @@ int validate_board(char game_board[N][N], int board_size, int column, int row);
 int is_board_full(char game_board[N][N], int board_size);
 int handle_reverse(char game_board[N][N], char history_board[MAX_TICKS][N][N], int board_size, int current_tick, int ticks);
 int handle_entry(char game_board[N][N], char history_board[MAX_TICKS][N][N], int board_size, int row, int column, int current_tick, int *valid_board);
+int is_valid_input(int *col, int row, int board_size, char game_board[N][N]);
 int main();
 
 /*-------------------------------------------------------------------------
@@ -167,7 +168,7 @@ int tick_handler(char game_board[N][N], char game_history[MAX_TICKS][N][N], int 
         return handle_reverse(game_board, game_history, board_size, current_tick, row);
     else
     {
-        if (!scanf("%d", &col) || row > board_size || col > board_size || col == 0 || row == 0 || game_board[row - 1][col - 1] != EMPTY_SPACE)
+        if (is_valid_input(&col, row, board_size, game_board))
         {
             print_error();
             return current_tick;
@@ -283,4 +284,10 @@ int handle_entry(char game_board[N][N], char history_board[MAX_TICKS][N][N], int
         print_player_turn((current_tick + 1) % 2 + 1);
     }
     return current_tick + 1;
+}
+
+int is_valid_input(int *col, int row, int board_size, char game_board[N][N])
+{
+    // if (!scanf("%d", &col) || row > board_size || col > board_size || col == 0 || row == 0 || game_board[row - 1][col - 1] != EMPTY_SPACE)
+    return !scanf("%d", col) || row > board_size || *col > board_size || *col == 0 || row == 0 || game_board[row - 1][*col - 1] != EMPTY_SPACE;
 }
