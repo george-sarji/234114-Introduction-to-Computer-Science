@@ -12,6 +12,12 @@
 #define EMPTY_SPACE '_'
 #define PLAYER_ONE 'X'
 #define PLAYER_TWO 'O'
+#define NUM_OF_PLAYERS 2
+#define PLAYER_ONE_NUM 1
+#define PLAYER_TWO_NUM 0
+#define EVEN 0
+#define UNEVEN 1
+#define ONE_INDEX 1
 
 /*-------------------------------------------------------------------------
     Function declaration
@@ -142,16 +148,15 @@ void initialize_game_board(char game_board[N][N], int board_size)
 void game_ticker(char game_board[N][N], char game_history[MAX_TICKS][N][N], int board_size)
 {
     int current_game_tick = 0, is_board_valid = true;
-    print_player_turn(1);
+    print_player_turn(PLAYER_ONE_NUM);
     while (is_board_valid)
         current_game_tick = tick_handler(game_board, game_history, board_size, current_game_tick, &is_board_valid);
     // The board is no longer valid. That means someone won or there's a tie.
     if (current_game_tick == board_size * board_size)
         print_tie();
     else
-        print_winner((current_game_tick % 2) + 1);
+        print_winner((current_game_tick % NUM_OF_PLAYERS) + 1);
 }
-
 
 // Adds a seperate history entry into the history array
 // 3 lines
@@ -206,7 +211,7 @@ int validate_column(char game_board[N][N], int board_size, int column)
 {
     for (int row = 1; row < board_size; row++)
     {
-        char current = game_board[row][column], previous = game_board[row - 1][column];
+        char current = game_board[row][column], previous = game_board[row - ONE_INDEX][column];
         if (current == EMPTY_SPACE || previous == EMPTY_SPACE || current != previous)
             return true;
     }
@@ -219,7 +224,7 @@ int validate_row(char game_board[N][N], int board_size, int row)
 {
     for (int column = 1; column < board_size; column++)
     {
-        char current = game_board[row][column], previous = game_board[row][column - 1];
+        char current = game_board[row][column], previous = game_board[row][column - ONE_INDEX];
         if (current == EMPTY_SPACE || previous == EMPTY_SPACE || current != previous)
             return true;
     }
@@ -232,7 +237,7 @@ int validate_primary_diagonal(char game_board[N][N], int board_size)
 {
     for (int i = 1; i < board_size; i++)
     {
-        char current = game_board[i][i], previous = game_board[i - 1][i - 1];
+        char current = game_board[i][i], previous = game_board[i - ONE_INDEX][i - ONE_INDEX];
         if (current == EMPTY_SPACE || previous == EMPTY_SPACE || current != previous)
             return true;
     }
@@ -245,7 +250,7 @@ int validate_secondary_diagonal(char game_board[N][N], int board_size)
 {
     for (int i = 1; i < board_size; i++)
     {
-        char current = game_board[i][board_size - i - 1], previous = game_board[i - 1][board_size - i];
+        char current = game_board[i][board_size - i - ONE_INDEX], previous = game_board[i - ONE_INDEX][board_size - i];
         if (current == EMPTY_SPACE || previous == EMPTY_SPACE || current != previous)
             return true;
     }
@@ -279,14 +284,14 @@ int is_board_full(char game_board[N][N], int board_size)
 // 7 lines
 int handle_reverse(char game_board[N][N], char history_board[MAX_TICKS][N][N], int board_size, int current_tick, int ticks)
 {
-    if (ticks % 2 == 0)
+    if (ticks % NUM_OF_PLAYERS == EVEN)
     {
         print_error();
         return current_tick;
     }
     reverse_board(game_board, history_board, board_size, current_tick, ticks);
     print_board(game_board, board_size);
-    print_player_turn((current_tick + 1) % 2 + 1);
+    print_player_turn((current_tick + ONE_INDEX) % NUM_OF_PLAYERS + ONE_INDEX);
     return current_tick + ticks;
 }
 
@@ -295,14 +300,14 @@ int handle_reverse(char game_board[N][N], char history_board[MAX_TICKS][N][N], i
 int handle_entry(char game_board[N][N], char history_board[MAX_TICKS][N][N], int board_size, int row, int column, int current_tick, int *valid_board)
 {
     add_history_entry(game_board, history_board, board_size, current_tick);
-    game_board[row - 1][column - 1] = current_tick % 2 == 0 ? PLAYER_ONE : PLAYER_TWO;
+    game_board[row - ONE_INDEX][column - ONE_INDEX] = current_tick % NUM_OF_PLAYERS == EVEN ? PLAYER_ONE : PLAYER_TWO;
     print_board(game_board, board_size);
-    *valid_board = validate_board(game_board, board_size, column - 1, row - 1);
+    *valid_board = validate_board(game_board, board_size, column - ONE_INDEX, row - ONE_INDEX);
     if (*valid_board)
     {
-        print_player_turn((current_tick + 1) % 2 + 1);
+        print_player_turn((current_tick + ONE_INDEX) % NUM_OF_PLAYERS + ONE_INDEX);
     }
-    return current_tick + 1;
+    return current_tick + ONE_INDEX;
 }
 
 // Validates that the inputs given are valid and allowed to be used (numbers not out of bounds, empty space at cell)
@@ -310,5 +315,5 @@ int handle_entry(char game_board[N][N], char history_board[MAX_TICKS][N][N], int
 int is_valid_input(int *col, int row, int board_size, char game_board[N][N])
 {
     // if (!scanf("%d", &col) || row > board_size || col > board_size || col == 0 || row == 0 || game_board[row - 1][col - 1] != EMPTY_SPACE)
-    return !scanf("%d", col) || row > board_size || *col > board_size || *col == 0 || row == 0 || game_board[row - 1][*col - 1] != EMPTY_SPACE;
+    return !scanf("%d", col) || row > board_size || *col > board_size || *col == 0 || row == 0 || game_board[row - ONE_INDEX][*col - ONE_INDEX] != EMPTY_SPACE;
 }
