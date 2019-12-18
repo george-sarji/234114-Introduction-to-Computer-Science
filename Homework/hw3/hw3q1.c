@@ -50,12 +50,6 @@ int main();
     Implementation
 -------------------------------------------------------------------------*/
 
-int main()
-{
-    initialize_game();
-    return 0;
-}
-
 //print welcome message
 //1 lines
 void print_welcome()
@@ -115,8 +109,28 @@ void print_tie()
     printf("It's a tie!\n");
 }
 
-// This function will initialize the game with the required variables.
-// 7 lines
+/***********************************************
+ * NAME:        main
+ * 
+ * DESCRIPTION: Main program function
+ * 
+ * LENGTH:
+ *      2 lines
+***********************************************/
+int main()
+{
+    initialize_game();
+    return 0;
+}
+
+/***********************************************
+ * NAME:        initialize_game
+ * 
+ * DESCRIPTION: Initializes the game-required variables and board
+ * 
+ * LENGTH:
+ *      7 lines
+***********************************************/
 void initialize_game()
 {
     char game_board[N][N], history_board[MAX_TICKS][N][N];
@@ -129,8 +143,18 @@ void initialize_game()
     game_ticker(game_board, history_board, board_size);
 }
 
-// This function will initialize the game board with empty spaces
-// 4 lines
+/***********************************************
+ * NAME:        initialize_game_board
+ * 
+ * DESCRIPTION: Initializes the game board with empty spaces
+ * 
+ * INPUTS:
+ *      char[N][N]      game_board      Visualization of game board
+ *      int             board_size      Size of game board
+ * 
+ * LENGTH:
+ *      4 lines
+***********************************************/
 void initialize_game_board(char game_board[N][N], int board_size)
 {
     for (int row = 0; row < board_size; row++)
@@ -143,8 +167,19 @@ void initialize_game_board(char game_board[N][N], int board_size)
     print_board(game_board, board_size);
 }
 
-// Houses the logic for the turns (ticks) handling for the game
-// 8 lines
+/***********************************************
+ * NAME:        game_ticker
+ * 
+ * DESCRIPTION: Main game logic for turns
+ * 
+ * INPUTS:
+ *      char[N][N]              game_board      Visualization of game board
+ *      char[MAX_TICKS][N][N]   game_history    History of the game board
+ *      int                     board_size      Size of game board
+ * 
+ * LENGTH:
+ *      8 lines
+***********************************************/
 void game_ticker(char game_board[N][N], char game_history[MAX_TICKS][N][N], int board_size)
 {
     int current_game_tick = 0, is_board_valid = true;
@@ -158,8 +193,20 @@ void game_ticker(char game_board[N][N], char game_history[MAX_TICKS][N][N], int 
         print_winner((current_game_tick % NUM_OF_PLAYERS) + 1);
 }
 
-// Adds a seperate history entry into the history array
-// 3 lines
+/***********************************************
+ * NAME:        history_entry
+ * 
+ * DESCRIPTION: Adds a copy of the game board to the history array
+ * 
+ * INPUTS:
+ *      char[N][N]              game_board      Visualization of game board
+ *      char[MAX_TICKS][N][N]   game_history    History of the game board
+ *      int                     board_size      Size of game board
+ *      int                     current_tick    Number of current turn
+ * 
+ * LENGTH:
+ *      3 lines
+***********************************************/
 void add_history_entry(char game_board[N][N], char history_board[MAX_TICKS][N][N], int board_size, int current_tick)
 {
     for (int row = 0; row < board_size; row++)
@@ -171,8 +218,27 @@ void add_history_entry(char game_board[N][N], char history_board[MAX_TICKS][N][N
     }
 }
 
-// Main logic for handling each tick, processes the input and performs the required actions (entry, illegal action, undo)
-// 11 lines
+/***********************************************
+ * NAME:        tick_handler
+ * 
+ * DESCRIPTION: Handles the logic for each seperate game tick
+ * 
+ * INPUTS:
+ *      char[N][N]              game_board      Visualization of game board
+ *      char[MAX_TICKS][N][N]   game_history    History of the game board
+ *      int                     board_size      Size of game board
+ *      int                     current_tick    Number of current turn
+ *      int*                    valid_board     Pointer to state of board validity (0/1)
+ * 
+ * OUTPUT:
+ *      current_tick            The tick the game should be continued on:
+ *                                  - Current game tick if input is invalid
+ *                                  - Next game tick if valid entry
+ *                                  - current_tick - reverse if undo function
+ * 
+ * LENGTH:
+ *      11 lines
+***********************************************/
 int tick_handler(char game_board[N][N], char game_history[MAX_TICKS][N][N], int board_size, int current_tick, int *valid_board)
 {
     int row = 0, col = 0;
@@ -192,8 +258,21 @@ int tick_handler(char game_board[N][N], char game_history[MAX_TICKS][N][N], int 
     return current_tick;
 }
 
-// Reverses the board to a previous state
-// 3 lines
+/***********************************************
+ * NAME:        reverse_board
+ * 
+ * DESCRIPTION: Reverses the game board by a specific number of turns
+ * 
+ * INPUTS:
+ *      char[N][N]              game_board      Visualization of game board
+ *      char[MAX_TICKS][N][N]   game_history    History of the game board
+ *      int                     board_size      Size of game board
+ *      int                     current_tick    Number of current turn
+ *      int                     ticks           Number of ticks to reverse board by
+ * 
+ * LENGTH:
+ *      3 lines
+***********************************************/
 void reverse_board(char game_board[N][N], char game_history[MAX_TICKS][N][N], int board_size, int current_tick, int ticks)
 {
     for (int row = 0; row < board_size; row++)
@@ -205,8 +284,23 @@ void reverse_board(char game_board[N][N], char game_history[MAX_TICKS][N][N], in
     }
 }
 
-// Returns whether the given column is valid for a new tick
-// 6 lines
+/***********************************************
+ * NAME:        validate_column
+ * 
+ * DESCRIPTION: Validates the given column within the board
+ * 
+ * INPUTS:
+ *      char[N][N]              game_board      Visualization of game board
+ *      int                     board_size      Size of game board
+ *      int                     column          Index of column to validate
+ * 
+ * OUTPUT:
+ *      0           Column is not valid (there is a win)
+ *      1           Column is valid, game can continue
+ * 
+ * LENGTH:
+ *      6 lines
+***********************************************/
 int validate_column(char game_board[N][N], int board_size, int column)
 {
     for (int row = 1; row < board_size; row++)
@@ -218,8 +312,23 @@ int validate_column(char game_board[N][N], int board_size, int column)
     return false;
 }
 
-// Returns whether the given row is valid for a new tick
-// 6 lines
+/***********************************************
+ * NAME:        validate_row
+ * 
+ * DESCRIPTION: Validates the given row within the board
+ * 
+ * INPUTS:
+ *      char[N][N]              game_board      Visualization of game board
+ *      int                     board_size      Size of game board
+ *      int                     row          Index of row to validate
+ * 
+ * OUTPUT:
+ *      0           Row is not valid (there is a win)
+ *      1           Row is valid, game can continue
+ * 
+ * LENGTH:
+ *      6 lines
+***********************************************/
 int validate_row(char game_board[N][N], int board_size, int row)
 {
     for (int column = 1; column < board_size; column++)
@@ -231,8 +340,22 @@ int validate_row(char game_board[N][N], int board_size, int row)
     return false;
 }
 
-// Returns whether the primary diagonal is valid for a new tick
-// 6 lines
+/***********************************************
+ * NAME:        validate_primary_diagonal
+ * 
+ * DESCRIPTION: Validates the primary diagonal within the board
+ * 
+ * INPUTS:
+ *      char[N][N]              game_board      Visualization of game board
+ *      int                     board_size      Size of game board
+ * 
+ * OUTPUT:
+ *      0           Primary diagonal is not valid (there is a win)
+ *      1           Primary diagonal is valid, game can continue
+ * 
+ * LENGTH:
+ *      6 lines
+***********************************************/
 int validate_primary_diagonal(char game_board[N][N], int board_size)
 {
     for (int i = 1; i < board_size; i++)
@@ -244,8 +367,22 @@ int validate_primary_diagonal(char game_board[N][N], int board_size)
     return false;
 }
 
-// Returns whether the secondary diagonal within the board is valid for a new tick
-// 6 lines
+/***********************************************
+ * NAME:        validate_secondary_diagonal
+ * 
+ * DESCRIPTION: Validates the secondary diagonal within the board
+ * 
+ * INPUTS:
+ *      char[N][N]              game_board      Visualization of game board
+ *      int                     board_size      Size of game board
+ * 
+ * OUTPUT:
+ *      0           Secondary diagonal is not valid (there is a win)
+ *      1           Secondary diagonal is valid, game can continue
+ * 
+ * LENGTH:
+ *      6 lines
+***********************************************/
 int validate_secondary_diagonal(char game_board[N][N], int board_size)
 {
     for (int i = 1; i < board_size; i++)
@@ -257,16 +394,47 @@ int validate_secondary_diagonal(char game_board[N][N], int board_size)
     return false;
 }
 
-// Returns whether the board is valid for a new tick or not
-// 4 lines
+/***********************************************
+ * NAME:        validate_board
+ * 
+ * DESCRIPTION: Checks validity of the board and whether the game can continue.
+ *              Function is called once an input is valid.
+ * 
+ * INPUTS:
+ *      char[N][N]              game_board      Visualization of game board
+ *      int                     board_size      Size of game board
+ *      int                     column          Column of the last given input
+ *      int                     row             Row of the last given input
+ * 
+ * OUTPUT:
+ *      0           Board is not valid (there is a win/tie)
+ *      1           Board is valid, game can continue
+ * 
+ * LENGTH:
+ *      4 lines
+***********************************************/
 int validate_board(char game_board[N][N], int board_size, int column, int row)
 {
     return validate_primary_diagonal(game_board, board_size) && validate_secondary_diagonal(game_board, board_size) &&
            validate_column(game_board, board_size, column) && validate_row(game_board, board_size, row) && !is_board_full(game_board, board_size);
 }
 
-// Checks whether the board is completely full.
-// 5 lines
+/***********************************************
+ * NAME:        is_board_full
+ * 
+ * DESCRIPTION: Checks whether the board is full or not
+ * 
+ * INPUTS:
+ *      char[N][N]              game_board      Visualization of game board
+ *      int                     board_size      Size of game board
+ * 
+ * OUTPUT:
+ *      0           Board is full, tie
+ *      1           Board still has empty cells, game can continue
+ * 
+ * LENGTH:
+ *      5 lines
+***********************************************/
 int is_board_full(char game_board[N][N], int board_size)
 {
     for (int row = 0; row < board_size; row++)
@@ -280,8 +448,26 @@ int is_board_full(char game_board[N][N], int board_size)
     return true;
 }
 
-// Handles the reverse logic (proofs that the number input is un-even)
-// 7 lines
+/***********************************************
+ * NAME:        handle_reverse
+ * 
+ * DESCRIPTION: Validates the given reverse request and performs it
+ * 
+ * INPUTS:
+ *      char[N][N]              game_board      Visualization of game board
+ *      char[MAX_TICKS][N][N]   history_board   History of the game board
+ *      int                     board_size      Size of game board
+ *      int                     current_tick    Current game tick (turn)
+ *      int                     ticks           Number of ticks to reverse by
+ * 
+ * OUTPUT:
+ *      current_tick            Returns the tick the game should carry on from:
+ *                                  - Current tick if reverse is invalid
+ *                                  - Current tick - requested ticks reversed
+ * 
+ * LENGTH:
+ *      7 lines
+***********************************************/
 int handle_reverse(char game_board[N][N], char history_board[MAX_TICKS][N][N], int board_size, int current_tick, int ticks)
 {
     if (ticks % NUM_OF_PLAYERS == EVEN)
@@ -295,8 +481,26 @@ int handle_reverse(char game_board[N][N], char history_board[MAX_TICKS][N][N], i
     return current_tick + ticks;
 }
 
-// Handles the valid input of the player and appends it into the game board
-// 7 lines
+/***********************************************
+ * NAME:        handle_reverse
+ * 
+ * DESCRIPTION: Validates the given reverse request and performs it
+ * 
+ * INPUTS:
+ *      char[N][N]              game_board      Visualization of game board
+ *      char[MAX_TICKS][N][N]   history_board   History of the game board
+ *      int                     board_size      Size of game board
+ *      int                     row             Row index of last gievn input
+ *      int                     column          Column index of last given input
+ *      int                     current_tick    Current game tick (turn)
+ *      int*                    valid_board     Pointer to state of validity of game board
+ * 
+ * OUTPUT:
+ *      current_tick + 1
+ * 
+ * LENGTH:
+ *      7 lines
+***********************************************/
 int handle_entry(char game_board[N][N], char history_board[MAX_TICKS][N][N], int board_size, int row, int column, int current_tick, int *valid_board)
 {
     add_history_entry(game_board, history_board, board_size, current_tick);
@@ -310,8 +514,24 @@ int handle_entry(char game_board[N][N], char history_board[MAX_TICKS][N][N], int
     return current_tick + ONE_INDEX;
 }
 
-// Validates that the inputs given are valid and allowed to be used (numbers not out of bounds, empty space at cell)
-// 2 lines
+/***********************************************
+ * NAME:        is_valid_input
+ * 
+ * DESCRIPTION: Fool-proofs the row and column inputs given by the user, makes sure they are valid and useable
+ * 
+ * INPUTS:
+ *      char[N][N]              game_board      Visualization of game board
+ *      int                     board_size      Size of game board
+ *      int                     row             Row index of last given input
+ *      int*                    col             Pointer to column index of last given input
+ * 
+ * OUTPUT:
+ *      1               Input is valid
+ *      0               Input invalid
+ * 
+ * LENGTH:
+ *      7 lines
+***********************************************/
 int is_valid_input(int *col, int row, int board_size, char game_board[N][N])
 {
     // if (!scanf("%d", &col) || row > board_size || col > board_size || col == 0 || row == 0 || game_board[row - 1][col - 1] != EMPTY_SPACE)
