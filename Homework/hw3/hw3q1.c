@@ -189,7 +189,7 @@ void game_ticker(char game_board[N][N], char game_history[MAX][N][N], int board_
         current_game_tick = tick_handler(game_board, game_history, board_size, current_game_tick, &is_board_valid);
     }
     // The board is no longer valid. That means someone won or there's a tie.
-    if (board_size != UNEVEN && is_board_valid && current_game_tick == board_size * board_size)
+    if (is_board_valid && current_game_tick == board_size * board_size)
         print_tie();
     else
         print_winner((current_game_tick % NUM_OF_PLAYERS) + UNEVEN);
