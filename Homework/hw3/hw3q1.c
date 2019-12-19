@@ -184,13 +184,15 @@ void game_ticker(char game_board[N][N], char game_history[MAX][N][N], int board_
 {
     int current_game_tick = 0, is_board_valid = true;
     print_player_turn(PLAYER_ONE_NUM);
-    while (is_board_valid)
+    while (is_board_valid && !is_board_full(game_board, board_size))
+    {
         current_game_tick = tick_handler(game_board, game_history, board_size, current_game_tick, &is_board_valid);
+    }
     // The board is no longer valid. That means someone won or there's a tie.
-    if (board_size != UNEVEN && current_game_tick == board_size * board_size)
+    if (board_size != UNEVEN && is_board_valid && current_game_tick == board_size * board_size)
         print_tie();
     else
-        print_winner((current_game_tick % NUM_OF_PLAYERS) + 1);
+        print_winner((current_game_tick % NUM_OF_PLAYERS) + UNEVEN);
 }
 
 /***********************************************
@@ -416,7 +418,7 @@ int validate_secondary_diagonal(char game_board[N][N], int board_size)
 int validate_board(char game_board[N][N], int board_size, int column, int row)
 {
     return validate_primary_diagonal(game_board, board_size) && validate_secondary_diagonal(game_board, board_size) &&
-           validate_column(game_board, board_size, column) && validate_row(game_board, board_size, row) && !is_board_full(game_board, board_size);
+           validate_column(game_board, board_size, column) && validate_row(game_board, board_size, row);
 }
 
 /***********************************************
@@ -507,7 +509,7 @@ int handle_entry(char game_board[N][N], char history_board[MAX][N][N], int board
     game_board[row - ONE_INDEX][column - ONE_INDEX] = current_tick % NUM_OF_PLAYERS == EVEN ? PLAYER_ONE : PLAYER_TWO;
     print_board(game_board, board_size);
     *valid_board = validate_board(game_board, board_size, column - ONE_INDEX, row - ONE_INDEX);
-    if (*valid_board)
+    if (*valid_board && !is_board_full(game_board, board_size))
     {
         print_player_turn((current_tick + ONE_INDEX) % NUM_OF_PLAYERS + ONE_INDEX);
     }
