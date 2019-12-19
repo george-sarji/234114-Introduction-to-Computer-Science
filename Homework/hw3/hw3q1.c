@@ -31,18 +31,18 @@ void print_winner(int player_index);
 void print_tie();
 void initialize_game();
 void initialize_game_board(char game_board[N][N], int board_size);
-void game_ticker(char game_board[N][N], char game_history[MAX_TICKS][N][N], int board_size);
-void add_history_entry(char game_board[N][N], char history_board[MAX_TICKS][N][N], int board_size, int current_tick);
-int tick_handler(char game_board[N][N], char game_history[MAX_TICKS][N][N], int board_size, int current_tick, int *valid_board);
-void reverse_board(char game_board[N][N], char game_history[MAX_TICKS][N][N], int board_size, int current_tick, int ticks);
+void game_ticker(char game_board[N][N], char game_history[MAX][N][N], int board_size);
+void add_history_entry(char game_board[N][N], char history_board[MAX][N][N], int board_size, int current_tick);
+int tick_handler(char game_board[N][N], char game_history[MAX][N][N], int board_size, int current_tick, int *valid_board);
+void reverse_board(char game_board[N][N], char game_history[MAX][N][N], int board_size, int current_tick, int ticks);
 int validate_column(char game_board[N][N], int board_size, int column);
 int validate_row(char game_board[N][N], int board_size, int row);
 int validate_primary_diagonal(char game_board[N][N], int board_size);
 int validate_secondary_diagonal(char game_board[N][N], int board_size);
 int validate_board(char game_board[N][N], int board_size, int column, int row);
 int is_board_full(char game_board[N][N], int board_size);
-int handle_reverse(char game_board[N][N], char history_board[MAX_TICKS][N][N], int board_size, int current_tick, int ticks);
-int handle_entry(char game_board[N][N], char history_board[MAX_TICKS][N][N], int board_size, int row, int column, int current_tick, int *valid_board);
+int handle_reverse(char game_board[N][N], char history_board[MAX][N][N], int board_size, int current_tick, int ticks);
+int handle_entry(char game_board[N][N], char history_board[MAX][N][N], int board_size, int row, int column, int current_tick, int *valid_board);
 int is_valid_input(int *col, int row, int board_size, char game_board[N][N]);
 int main();
 
@@ -133,7 +133,7 @@ int main()
 ***********************************************/
 void initialize_game()
 {
-    char game_board[N][N], history_board[MAX_TICKS][N][N];
+    char game_board[N][N], history_board[MAX][N][N];
     int board_size = 0;
     print_welcome();
     print_enter_board_size();
@@ -180,7 +180,7 @@ void initialize_game_board(char game_board[N][N], int board_size)
  * LENGTH:
  *      8 lines
 ***********************************************/
-void game_ticker(char game_board[N][N], char game_history[MAX_TICKS][N][N], int board_size)
+void game_ticker(char game_board[N][N], char game_history[MAX][N][N], int board_size)
 {
     int current_game_tick = 0, is_board_valid = true;
     print_player_turn(PLAYER_ONE_NUM);
@@ -207,7 +207,7 @@ void game_ticker(char game_board[N][N], char game_history[MAX_TICKS][N][N], int 
  * LENGTH:
  *      3 lines
 ***********************************************/
-void add_history_entry(char game_board[N][N], char history_board[MAX_TICKS][N][N], int board_size, int current_tick)
+void add_history_entry(char game_board[N][N], char history_board[MAX][N][N], int board_size, int current_tick)
 {
     for (int row = 0; row < board_size; row++)
     {
@@ -239,7 +239,7 @@ void add_history_entry(char game_board[N][N], char history_board[MAX_TICKS][N][N
  * LENGTH:
  *      11 lines
 ***********************************************/
-int tick_handler(char game_board[N][N], char game_history[MAX_TICKS][N][N], int board_size, int current_tick, int *valid_board)
+int tick_handler(char game_board[N][N], char game_history[MAX][N][N], int board_size, int current_tick, int *valid_board)
 {
     int row = 0, col = 0;
     scanf("%d", &row);
@@ -273,7 +273,7 @@ int tick_handler(char game_board[N][N], char game_history[MAX_TICKS][N][N], int 
  * LENGTH:
  *      3 lines
 ***********************************************/
-void reverse_board(char game_board[N][N], char game_history[MAX_TICKS][N][N], int board_size, int current_tick, int ticks)
+void reverse_board(char game_board[N][N], char game_history[MAX][N][N], int board_size, int current_tick, int ticks)
 {
     for (int row = 0; row < board_size; row++)
     {
@@ -468,7 +468,7 @@ int is_board_full(char game_board[N][N], int board_size)
  * LENGTH:
  *      7 lines
 ***********************************************/
-int handle_reverse(char game_board[N][N], char history_board[MAX_TICKS][N][N], int board_size, int current_tick, int ticks)
+int handle_reverse(char game_board[N][N], char history_board[MAX][N][N], int board_size, int current_tick, int ticks)
 {
     if (ticks % NUM_OF_PLAYERS == EVEN)
     {
@@ -501,7 +501,7 @@ int handle_reverse(char game_board[N][N], char history_board[MAX_TICKS][N][N], i
  * LENGTH:
  *      7 lines
 ***********************************************/
-int handle_entry(char game_board[N][N], char history_board[MAX_TICKS][N][N], int board_size, int row, int column, int current_tick, int *valid_board)
+int handle_entry(char game_board[N][N], char history_board[MAX][N][N], int board_size, int row, int column, int current_tick, int *valid_board)
 {
     add_history_entry(game_board, history_board, board_size, current_tick);
     game_board[row - ONE_INDEX][column - ONE_INDEX] = current_tick % NUM_OF_PLAYERS == EVEN ? PLAYER_ONE : PLAYER_TWO;
@@ -534,6 +534,6 @@ int handle_entry(char game_board[N][N], char history_board[MAX_TICKS][N][N], int
 ***********************************************/
 int is_valid_input(int *col, int row, int board_size, char game_board[N][N])
 {
-    // if (!scanf("%d", &col) || row > board_size || col > board_size || col == 0 || row == 0 || game_board[row - 1][col - 1] != EMPTY_SPACE)
-    return !scanf("%d", col) || row > board_size || *col > board_size || *col == 0 || row == 0 || game_board[row - ONE_INDEX][*col - ONE_INDEX] != EMPTY_SPACE;
+    return !scanf("%d", col) || row > board_size || *col > board_size ||
+           *col == 0 || row == 0 || game_board[row - ONE_INDEX][*col - ONE_INDEX] != EMPTY_SPACE;
 }
