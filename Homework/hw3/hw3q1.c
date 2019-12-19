@@ -8,7 +8,7 @@
     Constants and definitions:
 -------------------------------------------------------------------------*/
 #define N 11
-#define MAX_TICKS N *N
+#define MAX N *N
 #define EMPTY_SPACE '_'
 #define PLAYER_ONE 'X'
 #define PLAYER_TWO 'O'
@@ -187,7 +187,7 @@ void game_ticker(char game_board[N][N], char game_history[MAX][N][N], int board_
     while (is_board_valid)
         current_game_tick = tick_handler(game_board, game_history, board_size, current_game_tick, &is_board_valid);
     // The board is no longer valid. That means someone won or there's a tie.
-    if (current_game_tick == board_size * board_size)
+    if (board_size != UNEVEN && current_game_tick == board_size * board_size)
         print_tie();
     else
         print_winner((current_game_tick % NUM_OF_PLAYERS) + 1);
@@ -470,7 +470,7 @@ int is_board_full(char game_board[N][N], int board_size)
 ***********************************************/
 int handle_reverse(char game_board[N][N], char history_board[MAX][N][N], int board_size, int current_tick, int ticks)
 {
-    if (ticks % NUM_OF_PLAYERS == EVEN)
+    if (ticks % NUM_OF_PLAYERS == EVEN || -UNEVEN * ticks > current_tick)
     {
         print_error();
         return current_tick;
