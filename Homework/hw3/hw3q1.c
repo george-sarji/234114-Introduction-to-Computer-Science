@@ -43,7 +43,7 @@ int validate_board(char game_board[N][N], int board_size, int column, int row);
 int is_board_full(char game_board[N][N], int board_size);
 int handle_reverse(char game_board[N][N], char history_board[MAX][N][N], int board_size, int current_tick, int ticks);
 int handle_entry(char game_board[N][N], char history_board[MAX][N][N], int board_size, int row, int column, int current_tick, int *valid_board);
-int is_valid_input(int *col, int row, int board_size, char game_board[N][N]);
+int input_invalid(int *col, int row, int board_size, char game_board[N][N]);
 int main();
 
 /*-------------------------------------------------------------------------
@@ -249,7 +249,7 @@ int tick_handler(char game_board[N][N], char game_history[MAX][N][N], int board_
         return handle_reverse(game_board, game_history, board_size, current_tick, row);
     else
     {
-        if (is_valid_input(&col, row, board_size, game_board))
+        if (input_invalid(&col, row, board_size, game_board))
         {
             print_error();
             return current_tick;
@@ -517,7 +517,7 @@ int handle_entry(char game_board[N][N], char history_board[MAX][N][N], int board
 }
 
 /***********************************************
- * NAME:        is_valid_input
+ * NAME:        input_invalid
  * 
  * DESCRIPTION: Fool-proofs the row and column inputs given by the user, makes sure they are valid and useable
  * 
@@ -528,13 +528,13 @@ int handle_entry(char game_board[N][N], char history_board[MAX][N][N], int board
  *      int*                    col             Pointer to column index of last given input
  * 
  * OUTPUT:
- *      1               Input is valid
- *      0               Input invalid
+ *      1               Input is invalid
+ *      0               Input valid
  * 
  * LENGTH:
  *      7 lines
 ***********************************************/
-int is_valid_input(int *col, int row, int board_size, char game_board[N][N])
+int input_invalid(int *col, int row, int board_size, char game_board[N][N])
 {
     return !scanf("%d", col) || row > board_size || *col > board_size ||
            *col == 0 || row == 0 || game_board[row - ONE_INDEX][*col - ONE_INDEX] != EMPTY_SPACE;
