@@ -30,3 +30,11 @@ Reduced 10 points for hard coded number(s) usage
 #### Resubmitted: 30/NOV/2019
 
 Confirmation code: 234114-201901-xxxxxxx-3026519
+
+#### Grades:
+
+| Section         | Grade | Explanation       |
+| --------------- | ----- | ----------------- |
+| Automatic check | 120   | Bonus achieved    |
+| Manual check    | 100   |                   |
+| Total           | 110   | Average           |
