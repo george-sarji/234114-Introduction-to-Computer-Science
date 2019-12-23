@@ -33,3 +33,11 @@ Grade: 62
 ### Resubmitted: 22/DEC/2019
 
 Confirmation code: 234114-201901-xxxxxxx-7612570
+
+#### Grades:
+
+| Section         | Grade | Explanation       |
+| --------------- | ----- | ----------------- |
+| Automatic check | 110   | Bonus achieved    |
+| Manual check    | 100   |                   |
+| Total           | 105   | Average           |
