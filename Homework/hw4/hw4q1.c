@@ -78,21 +78,19 @@ int fillPricesTable(double flightsPrices[][DEST], int n, double *dollarRate)
 	// Each airline will have a specific line for it to input.
 	for (current_airline = 0; current_airline <= n && !is_EOF; current_airline++)
 	{
-		double temporary_num = 0;
 		for (int current_dest = 0; current_dest < DEST; current_dest++)
 		{
 			// Scan.
-			if (scanf("%lf", &temporary_num) == EOF)
+			if (scanf("%lf", &flightsPrices[current_airline][current_dest]) == EOF)
 			{
 				is_EOF = true;
 				break;
 			}
-			else if (temporary_num <= 0 && price_error_index == -1)
+			else if (flightsPrices[current_airline][current_dest] <= 0 && price_error_index == -1)
 			{
 				// Provide error
 				price_error_index = current_airline;
 			}
-			flightsPrices[current_airline][current_dest] = temporary_num;
 		}
 	}
 
@@ -109,9 +107,8 @@ int fillPricesTable(double flightsPrices[][DEST], int n, double *dollarRate)
 void compute(double flightsPrices[][DEST], int length, double *max, double *min, int *bestAirLine)
 {
 	if (length <= 0)
-	{
 		exit(-1);
-	}
+
 	// Initiate the pointers
 	double best_average = 0, current_average = 0;
 	*min = flightsPrices[0][0], *max = flightsPrices[0][0];
