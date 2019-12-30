@@ -62,7 +62,7 @@ int get_keycode(char ch)
 {
     if (ch >= MIN_UNDERLETTER && ch <= MAX_UNDERLETTER)
     {
-        return ch - MIN_UNDERLETTER;
+        return ch - MIN_UNDERLETTER + (KEY_SIZE / 2);
     }
     else
     {
@@ -75,28 +75,47 @@ char encrypt_char(unsigned char key[KEY_SIZE], char ch)
     return key[get_keycode(ch)];
 }
 
-
-// TODO: Unused parameter: max_str_len
 int read_words(char *words[], int size, int max_str_len)
 {
     int word_counter = 0;
-    char *currentString = "";
-    while (word_counter < size && scanf("%s", currentString) && *currentString != EOF)
+    char *currentString = (char *)malloc(max_str_len * sizeof(char));
+    if (currentString == NULL)
+        return EOF;
+    char newLine;
+    while (word_counter < size && scanf(" %s%c", currentString, &newLine) != EOF)
     {
-        // Create the dynamic allocation according to the size of the string
-        char *dynamicAllocation = (char *)malloc(sizeof(*currentString));
-        *dynamicAllocation = *currentString;
-        // TODO: Pointer issue resolve
-        (words[word_counter]) = dynamicAllocation;
-        word_counter++;
+        // Perform dynamic allocation.
+        words[word_counter++] = currentString;
+        if (newLine == '\n')
+        {
+            break;
+        }
+        currentString = (char *)malloc(max_str_len * sizeof(char));
+        if (currentString == NULL)
+        {
+            return EOF;
+        }
     }
 
     return word_counter;
 }
+
 void release_memory(char *words[], int num_words)
 {
     for (int i = 0; i < num_words; i++)
     {
         free(words[i]);
+    }
+}
+
+void encrypt_words(char *words[], int num_words, unsigned char key[KEY_SIZE])
+{
+    for (int i = 0; i < num_words; i++)
+    {
+        char *currentWord = words[i];
+        for (unsigned int letter = 0; letter < strlen(currentWord); letter++)
+        {
+            currentWord[letter] = encrypt_char(key, currentWord[letter]);
+        }
     }
 }

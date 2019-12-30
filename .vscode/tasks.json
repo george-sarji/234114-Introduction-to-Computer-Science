@@ -1,19 +1,39 @@
 {
     "version": "2.0.0",
     "tasks": [
-      {
-        "label": "msvc build",
-        "type": "shell",
-        "command": "cl.exe",
-        "args": ["/EHsc", "/Zi", "/Fe:", "${workspaceFolder}\\Output\\${fileBasenameNoExtension}.exe", "${file}"],
-        "group": {
-          "kind": "build",
-          "isDefault": true
+        {
+            "label": "msvc build",
+            "type": "shell",
+            "command": "cl.exe",
+            "args": [
+                "/EHsc",
+                "/Zi",
+                "/Fe:",
+                "${workspaceFolder}\\Output\\${fileBasenameNoExtension}.exe",
+                "${file}"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always"
+            },
+            "problemMatcher": "$msCompile"
         },
-        "presentation": {
-          "reveal": "always"
-        },
-        "problemMatcher": "$msCompile"
-      }
+        {
+            "type": "shell",
+            "label": "gcc.exe build active file",
+            "command": "C:\\MinGW\\bin\\gcc.exe",
+            "args": [
+                "-g",
+                "${file}",
+                "-o",
+                "${fileDirname}\\${fileBasenameNoExtension}.exe"
+            ],
+            "options": {
+                "cwd": "C:\\MinGW\\bin"
+            }
+        }
     ]
-  }
+}
