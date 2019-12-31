@@ -85,7 +85,7 @@ int read_words(char *words[], int size, int max_str_len)
     while (word_counter < size && scanf(" %s%c", currentString, &newLine) != EOF)
     {
         // Perform dynamic allocation.
-        char *dynamicAlloc = (char *)malloc((int)strlen(currentString + 1) * sizeof(char));
+        char *dynamicAlloc = (char *)malloc((int)(strlen(currentString) + 1) * sizeof(char));
         strcpy(dynamicAlloc, currentString);
         free(currentString);
         words[word_counter++] = dynamicAlloc;
