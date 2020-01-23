@@ -1,8 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 #define DIM 4
 #define MAX_STEPS DIM *DIM
+#define DEBUG true
 
 void PrintWelcomeMessage()
 {
@@ -30,7 +32,8 @@ void PrintNumber(int num)
 }
 
 int main();
-int calculate_route(int source, int dest, int origin, int currentLength, int steps, int map[DIM][DIM], int used[DIM], int path[DIM], int *stepsCount);
+int calculate_route(int source, int dest, int origin, int currentLength, int steps, int map[DIM][DIM], int used[DIM], int path[DIM], int *stepsCount, int minLength);
+
 void copy_arr(int *arr, int *to, int size);
 void receive_road(int map[DIM][DIM], int *source, int *dest);
 void printPath(int path[DIM], int steps);
@@ -55,7 +58,7 @@ int main()
 
     // Get the route.
     int currentPath[DIM] = {-1}, used[DIM] = {0}, finalStepsCount = 0;
-    calculate_route(source, dest, source, 0, 0, map, used, currentPath, &finalStepsCount);
+    calculate_route(source, dest, source, 0, 0, map, used, currentPath, &finalStepsCount, map[source][dest]);
     printf("The shortest path is:\n");
     // for (int i = 0; i <= finalStepsCount; i++)
     // {
@@ -66,7 +69,7 @@ int main()
     return 0;
 }
 
-int calculate_route(int source, int dest, int origin, int currentLength, int steps, int map[DIM][DIM], int used[DIM], int path[DIM], int *stepsCount)
+int calculate_route(int source, int dest, int origin, int currentLength, int steps, int map[DIM][DIM], int used[DIM], int path[DIM], int *stepsCount, int minLength)
 {
     // if (source == dest)
     // {
@@ -109,56 +112,100 @@ int calculate_route(int source, int dest, int origin, int currentLength, int ste
     // path = minPath;
     // return minLength;
 
-    if (source == dest)
-    {
-        // Arrived. Make sure you add dest to path and set steps.
-        *stepsCount = steps;
-        path[steps] = source;
-        // Return the current length of the path.
-        // printf("Arrived at dest with length %d.\n", currentLength);
-        // printf("Path to dest: ");
-        // printPath(path, steps);
-        return currentLength;
-    }
-    // Check if the path taken is legal.
-    if (currentLength > map[origin][dest] || steps >= DIM || isInPath(path, steps, source))
-    {
-        // Return error.
+    // if (source == dest)
+    // {
+    //     // Arrived. Make sure you add dest to path and set steps.
+    //     *stepsCount = steps;
+    //     path[steps] = source;
+    //     // Return the current length of the path.
+    //     // printf("Arrived at dest with length %d.\n", currentLength);
+    //     // printf("Path to dest: ");
+    //     // printPath(path, steps);
+    //     return currentLength;
+    // }
+    // // Check if the path taken is legal.
+    // if (currentLength > map[origin][dest] || steps >= DIM || isInPath(path, steps, source))
+    // {
+    //     // Return error.
+    //     return EOF;
+    // }
+
+    // // We have a legal attempt. Check.
+    // // Add current city to path.
+    // path[steps] = source;
+    // used[source] = 1;
+    // // Go over all possibilities.
+    // int minLength = map[source][dest] + currentLength, minPath[DIM] = {0};
+    // copy_arr(path, minPath, steps);
+    // minPath[steps] = source;
+    // minPath[steps + 1] = dest;
+    // for (int i = 0; i < DIM; i++)
+    // {
+    //     // Do not iterate over same city.
+    //     if (source == i)
+    //         continue;
+
+    //     // Get possible length for current path.
+    //     int currLength = calculate_route(i, dest, origin, currentLength + map[source][i], steps + 1, map, used, path, stepsCount);
+    //     if (currLength == EOF)
+    //         // Illegal move. Skip.
+    //         continue;
+    //     // printf("Currently at %d, Length between %d and %d: %d\n", source, i, dest, currLength);
+    //     if (currLength < minLength)
+    //     {
+    //         // New minimum length. Use it.
+    //         minLength = currLength;
+    //         copy_arr(path, minPath, DIM);
+    //         // printf("Located new minimum length: %d, standing at %d, travelling from %d to %d.\n", minLength, source, i, dest);
+    //     }
+    // }
+
+    // // Return the current length.
+    // return minLength;
+    if (currentLength > minLength || isInPath(path, steps, source) || steps >= DIM - 1)
         return EOF;
-    }
-
-    // We have a legal attempt. Check.
-    // Add current city to path.
-    path[steps] = source;
-    used[source] = 1;
-    // Go over all possibilities.
-    int minLength = map[source][dest] + currentLength, minPath[DIM] = {0};
-    copy_arr(path, minPath, steps);
-    minPath[steps] = source;
-    minPath[steps + 1] = dest;
-    for (int i = 0; i < DIM; i++)
+    if (dest == source)
     {
-        // Do not iterate over same city.
-        if (source == i)
-            continue;
+        path[steps] = dest;
+        *stepsCount = steps;
+        DEBUG ? printf("Arrived at dest %d, took path in %d steps:", dest, steps) : 0;
+        printPath(path, steps);
+        printf("\n");
+        return 0;
+        // Add to the path list and change the final steps count
+    }
+    if (currentLength > map[origin][dest] || isInPath(path, steps, source) || steps >= DIM - 1)
+        return EOF;
 
-        // Get possible length for current path.
-        int currLength = calculate_route(i, dest, origin, currentLength + map[source][i], steps + 1, map, used, path, stepsCount);
-        if (currLength == EOF)
-            // Illegal move. Skip.
+    // Add to the path.
+    path[steps] = source;
+    // Check for each possibility.
+    int min = map[source][dest], minPath[DIM] = {0};
+    copy_arr(path, minPath, steps);
+    path[steps] = source;
+    path[steps + 1] = dest;
+    for (int current = 0; current < DIM; current++)
+    {
+        if (current == source)
             continue;
-        // printf("Currently at %d, Length between %d and %d: %d\n", source, i, dest, currLength);
-        if (currLength < minLength)
+        // Skip if checking with current.
+
+        // Get the length of the next section.
+        int currentLength = calculate_route(current, dest, origin, currentLength + map[source][current], steps + 1, map, used, path, stepsCount, min);
+        if (currentLength == EOF)
         {
-            // New minimum length. Use it.
-            minLength = currLength;
-            copy_arr(path, minPath, DIM);
-            // printf("Located new minimum length: %d, standing at %d, travelling from %d to %d.\n", minLength, source, i, dest);
+            // Illegal. Continue.
+            continue;
+        }
+        else if (min > currentLength)
+        {
+            // Change the path and min length.
+            min = currentLength;
+            copy_arr(path, minPath, *stepsCount);
         }
     }
 
-    // Return the current length.
-    return minLength;
+    return min + currentLength;
 }
 
 void receive_road(int map[DIM][DIM], int *source, int *dest)
