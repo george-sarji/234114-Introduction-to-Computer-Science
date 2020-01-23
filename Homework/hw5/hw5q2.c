@@ -3,8 +3,7 @@
 #include <string.h>
 #include <stdbool.h>
 #define DIM 4
-#define MAX_STEPS DIM *DIM
-#define DEBUG true
+#define DEBUG false
 
 void PrintWelcomeMessage()
 {
@@ -32,8 +31,7 @@ void PrintNumber(int num)
 }
 
 int main();
-int calculate_road(int source, int dest, int origin, int map[DIM][DIM], int path[DIM], int steps, int *finalSteps, int currentPathLength, int *minimumLength);
-
+int calculate_road(int source, int dest, int origin, int map[DIM][DIM], int path[DIM], int steps, int *finalSteps, int currentPathLength, int *minimumLength, int optimalPath[DIM]);
 void copy_arr(int *arr, int *to, int size);
 void receive_road(int map[DIM][DIM], int *source, int *dest);
 void printPath(int path[DIM], int steps);
@@ -44,14 +42,14 @@ int main()
     int map[DIM][DIM] = {{0}}, source = 0, dest = 0;
     receive_road(map, &source, &dest);
     // Get the route.
-    int currentPath[DIM] = {-1}, finalStepsCount = 0, direct = map[source][dest];
-    calculate_road(source, dest, source, map, currentPath, 0, &finalStepsCount, 0, &direct);
+    int currentPath[DIM] = {-1}, finalStepsCount = 0, direct = map[source][dest], minimalPath[DIM] = {-1};
+    calculate_road(source, dest, source, map, currentPath, 0, &finalStepsCount, 0, &direct, minimalPath);
     printf("The shortest path is:\n");
-    printPath(currentPath, finalStepsCount);
+    printPath(minimalPath, finalStepsCount);
     return 0;
 }
 
-int calculate_road(int source, int dest, int origin, int map[DIM][DIM], int path[DIM], int steps, int *finalSteps, int currentPathLength, int *minimumLength)
+int calculate_road(int source, int dest, int origin, int map[DIM][DIM], int path[DIM], int steps, int *finalSteps, int currentPathLength, int *minimumLength, int optimalPath[DIM])
 {
     if (currentPathLength > *minimumLength || isInPath(path, steps, source))
     {
@@ -63,6 +61,10 @@ int calculate_road(int source, int dest, int origin, int map[DIM][DIM], int path
         *minimumLength = currentPathLength;
         *finalSteps = steps;
         path[steps] = dest;
+        copy_arr(path, optimalPath, steps);
+        DEBUG ? printf("Arrived at dest, went through path in %d steps: ", steps) : 0;
+        if (DEBUG)
+            printPath(optimalPath, steps);
         return currentPathLength;
     }
 
@@ -74,7 +76,7 @@ int calculate_road(int source, int dest, int origin, int map[DIM][DIM], int path
         if (i == source)
             continue;
 
-        int currentLength = calculate_road(i, dest, origin, map, path, steps + 1, finalSteps, currentPathLength + map[source][i], minimumLength);
+        int currentLength = calculate_road(i, dest, origin, map, path, steps + 1, finalSteps, currentPathLength + map[source][i], minimumLength, optimalPath);
         if (currentLength == EOF)
             continue;
         else if (currentLength <= *minimumLength && path[steps + 1] == i)
@@ -107,7 +109,7 @@ void receive_road(int map[DIM][DIM], int *source, int *dest)
 
 void copy_arr(int *arr, int *to, int size)
 {
-    for (int i = 0; i < size; i++)
+    for (int i = 0; i <= size; i++)
     {
         *(to + i) = *(arr + i);
     }
@@ -130,4 +132,5 @@ void printPath(int path[DIM], int steps)
         PrintNumber(path[i]);
         PrintSpace();
     }
+    DEBUG ? printf("\n") : 0;
 }
